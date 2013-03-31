@@ -1,0 +1,1158 @@
+--Coded by SuicidalSTDz
+--License:
+--The code of "EnderOS" in any form is intellectual
+--property of SuicidalSTDz. You may not reproduce,
+--redistribute, or modify it in any way!
+
+--This Graphical Shell stores User information in a hashed form. Making "hackers" tremble in fear >:) Not really...
+--The hash that EnderOS uses is Sha-256 and makes storage safer :)
+
+--If you find any bugs(I know there are a few) please report them on the CC Forums on the EnderOS thread!
+--Thank you for using EnderOS and enjoy!
+
+--Games
+--EnderOS includes SkullPong by Skullblade, AdventureCraft by Mikee251, and FireWolf by GravityScore
+
+--[[
+local tab = {
+" _____       _         _____ _____                 ";
+"|   __|___ _| |___ ___|     |   __|                ";
+"|   __|   | . | -_|  _|  |  |__   |                ";
+"|_____|_|_|___|___|_| |_____|_____|                ";
+"                                                   ";
+"                                                   ";
+" _____                                             ";
+"| __  |_ _                                         ";
+"| __ -| | |                                        ";
+"|_____|_  |                                        ";
+"      |___|                                        ";
+"                                                   ";
+" _____     _     _   _     _ _____ _____ ____      ";
+"|   __|_ _|_|___|_|_| |___| |   __|_   _|    \\ ___ ";
+"|__   | | | |  _| | . | .'| |__   | | | |  |  |- _|";
+"|_____|___|_|___|_|___|__,|_|_____| |_| |____/|___|";
+}
+term.setTextColor(colors.purple)
+term.clear()
+term.setCursorPos(1,1)
+for i = 1,#tab do
+  print(tab[i])
+end
+]]--
+
+--[[Variables]]--
+local w,h = term.getSize()
+local version = "v3.1"
+local col = term.setTextColor
+local saltHash = "T01hFg62zY"
+
+--[[Programs]]--
+local enderOSID = "Vx4Xapyt"
+local adventureCraft = "xkD4FcaB"
+local firewolf = "A7wGH3ty"
+local skullPong = "8LU0sjFR"
+local guessThatColor = "cQ1CbfAg"
+
+
+local uiS = {
+  ["desktopWords"] = {
+		{text = "EnderOS "..version,x1 = 19,x2 = string.len("EnderOS "..version)+20,y = 1, col = colours.purple,option = nil},
+		{text = "Log Off",x1 = 3,x2 = 11,y = 19,col = colours.lightBlue,option = "logOff"},
+		{text = "Lock",x1 = 14,x2 = 19,y = 19,col = colours.lightBlue,option = "lock"},
+		{text = "Exit",x1 = 22,x2 = 27,y = 19,col = colours.lightBlue,option = "exit"},
+		{text = "Reboot",x1 = 30,x2 = 37,y = 19,col = colours.lightBlue,option = "reboot"},
+		{text = "Shutdown",x1 = 40,x2 = 49,y = 19,col = colours.lightBlue,option = "shutdown"},
+		{text = "File Manager",x1 = 3, x2 = 16, y = 3, col = colours.orange,option = "fileManager"},
+		{text = "Programs",x1 = 19,x2 = 28,y = 3,col = colours.orange,option = "programs"},
+		{text = "Games",x1 = 31,x2 = 37,y = 3,col = colours.orange,option = "games"},
+		{text = "Settings",x1 = 40,x2 = 49,y = 3,col = colours.orange,option = "settings"}
+	},
+	["fileManagerWords"] = {
+		{text = "File Manager",x1 = 19,x2 = 32,y = 1,col = colours.purple,option = nil},
+		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
+		{text = "Edit",x1 = 4,x2 = 9,y = 3,col = colours.orange,option = "edit"}
+	},
+	["settings"] = {
+		{text = "Settings",x1 = 20,x2 = 29,y = 1,col = colours.purple,option = nil},
+		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
+		{text = "Username",x1 = 3,x2 = 12,y = 3,col = colours.orange,option = "changeUsername"},
+		{text = "Password",x1 = 15,x2 = 24,y = 3,col = colours.orange,option = "changePassword"},
+		{text = "Hint",x1 = 27,x2 = 32,y = 3,col = colours.orange,option = "changeHint"},
+		{text = "Uninstall",x1 = 35,x2 = 45,y = 3,col = colours.orange,option = "uninstall"}
+	},
+	["games"] = {
+		{text = "Games",x1 = 22,x2 = 28,y = 1,col = colours.purple,option = nil},
+		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
+		{text = "SkullPong",x1 = 3,x2 = 13,y = 3,col = colours.orange,option = "skullPong"},
+		{text = "AdventureCraft",x1 = 16,x2 = 31,y = 3,col = colours.orange,option = "adventureCraft"},
+		{text = "Guess That Color!",x1 = 3,x2 = 21,y = 5,col = colours.orange,option = "guessThatColor"}
+	},
+	["programs"] = {
+		{text = "Programs",x1 = 20,x2 = 29,y = 1,col = colours.purple,option = nil},
+		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
+		{text = "Firewolf",x1 = 3,x2 = 12,y = 3,col = colours.orange,option = "firewolf"},
+		{text = "Caclulator",x1 = 15,x2 = 26,y = 3,col = colours.orange,option = "calculator"}
+	}
+}
+
+local function reset()
+	term.clear()
+	term.setCursorPos(1,1)
+end
+
+local function bracket(tab)
+	for k,v in pairs(tab) do
+		term.setCursorPos(v.x1,v.y)
+		term.setTextColour(colours.lightGrey)
+		term.write("[")
+		term.setCursorPos(v.x2,v.y)
+		term.write("]")
+		term.setCursorPos(v.x1+1,v.y)
+		term.setTextColour(v.col)
+		term.write(v.text)
+	end
+end
+
+function frame()
+	col(colours.lime)
+	print("+-------------------------------------------------+")
+        for i = 1,17 do
+            print("|                                                 |")
+        end
+	term.write("+-------------------------------------------------+")
+	col(colours.white)
+end
+
+local function randomGen()
+	local randomWords = {
+		"Hello fellow Minecrafter!",
+		"Coded by SuicidalSTDz!",
+		"Catch me if you can!",
+		"Sha256 is NOT encryption!",
+		"Fight through the night!",
+		"The Endermen approve, do you?",
+		"Hate FORTH? Get Lua!",
+		"Who's Notch?!"
+	}
+	local color = {
+		[1] = colours.white,
+		[2] = colours.orange,
+		[3] = colours.magenta,
+		[4] = colours.lightBlue,
+		[5] = colours.yellow,
+		[6] = colours.lime,
+		[7] = colours.pink,
+		[8] = colours.gray,
+		[9] = colours.lightGray,
+		[10] = colours.cyan,
+		[11] = colours.purple,
+		[12] = colours.blue,
+		[13] = colours.brown,
+		[14] = colours.green,
+		[15] = colours.red
+	}
+	local motd = math.random(1,#randomWords)
+	local randomCol = math.random(1,#color)
+	col(color[randomCol])
+	term.setCursorPos((w-#randomWords[motd])/2,18)
+	term.write(randomWords[motd])
+end
+
+local function sha256(msg)
+	local function band(int1, int2, int3, ...)
+		local ret =
+		((int1%0x00000002>=0x00000001 and int2%0x00000002>=0x00000001 and 0x00000001) or 0)+
+		((int1%0x00000004>=0x00000002 and int2%0x00000004>=0x00000002 and 0x00000002) or 0)+
+		((int1%0x00000008>=0x00000004 and int2%0x00000008>=0x00000004 and 0x00000004) or 0)+
+		((int1%0x00000010>=0x00000008 and int2%0x00000010>=0x00000008 and 0x00000008) or 0)+
+		((int1%0x00000020>=0x00000010 and int2%0x00000020>=0x00000010 and 0x00000010) or 0)+
+		((int1%0x00000040>=0x00000020 and int2%0x00000040>=0x00000020 and 0x00000020) or 0)+
+		((int1%0x00000080>=0x00000040 and int2%0x00000080>=0x00000040 and 0x00000040) or 0)+
+		((int1%0x00000100>=0x00000080 and int2%0x00000100>=0x00000080 and 0x00000080) or 0)+
+		((int1%0x00000200>=0x00000100 and int2%0x00000200>=0x00000100 and 0x00000100) or 0)+
+		((int1%0x00000400>=0x00000200 and int2%0x00000400>=0x00000200 and 0x00000200) or 0)+
+		((int1%0x00000800>=0x00000400 and int2%0x00000800>=0x00000400 and 0x00000400) or 0)+
+		((int1%0x00001000>=0x00000800 and int2%0x00001000>=0x00000800 and 0x00000800) or 0)+
+		((int1%0x00002000>=0x00001000 and int2%0x00002000>=0x00001000 and 0x00001000) or 0)+
+		((int1%0x00004000>=0x00002000 and int2%0x00004000>=0x00002000 and 0x00002000) or 0)+
+		((int1%0x00008000>=0x00004000 and int2%0x00008000>=0x00004000 and 0x00004000) or 0)+
+		((int1%0x00010000>=0x00008000 and int2%0x00010000>=0x00008000 and 0x00008000) or 0)+
+		((int1%0x00020000>=0x00010000 and int2%0x00020000>=0x00010000 and 0x00010000) or 0)+
+		((int1%0x00040000>=0x00020000 and int2%0x00040000>=0x00020000 and 0x00020000) or 0)+
+		((int1%0x00080000>=0x00040000 and int2%0x00080000>=0x00040000 and 0x00040000) or 0)+
+		((int1%0x00100000>=0x00080000 and int2%0x00100000>=0x00080000 and 0x00080000) or 0)+
+		((int1%0x00200000>=0x00100000 and int2%0x00200000>=0x00100000 and 0x00100000) or 0)+
+		((int1%0x00400000>=0x00200000 and int2%0x00400000>=0x00200000 and 0x00200000) or 0)+
+		((int1%0x00800000>=0x00400000 and int2%0x00800000>=0x00400000 and 0x00400000) or 0)+
+		((int1%0x01000000>=0x00800000 and int2%0x01000000>=0x00800000 and 0x00800000) or 0)+
+		((int1%0x02000000>=0x01000000 and int2%0x02000000>=0x01000000 and 0x01000000) or 0)+
+		((int1%0x04000000>=0x02000000 and int2%0x04000000>=0x02000000 and 0x02000000) or 0)+
+		((int1%0x08000000>=0x04000000 and int2%0x08000000>=0x04000000 and 0x04000000) or 0)+
+		((int1%0x10000000>=0x08000000 and int2%0x10000000>=0x08000000 and 0x08000000) or 0)+
+		((int1%0x20000000>=0x10000000 and int2%0x20000000>=0x10000000 and 0x10000000) or 0)+
+		((int1%0x40000000>=0x20000000 and int2%0x40000000>=0x20000000 and 0x20000000) or 0)+
+		((int1%0x80000000>=0x40000000 and int2%0x80000000>=0x40000000 and 0x40000000) or 0)+
+		((int1>=0x80000000 and int2>=0x80000000 and 0x80000000) or 0)
+
+		return (int3 and band(ret, int3, ...)) or ret
+	end
+
+	local function bxor(int1, int2, int3, ...)
+		local ret =
+		((int1%0x00000002>=0x00000001 ~= (int2%0x00000002>=0x00000001) and 0x00000001) or 0)+
+		((int1%0x00000004>=0x00000002 ~= (int2%0x00000004>=0x00000002) and 0x00000002) or 0)+
+		((int1%0x00000008>=0x00000004 ~= (int2%0x00000008>=0x00000004) and 0x00000004) or 0)+
+		((int1%0x00000010>=0x00000008 ~= (int2%0x00000010>=0x00000008) and 0x00000008) or 0)+
+		((int1%0x00000020>=0x00000010 ~= (int2%0x00000020>=0x00000010) and 0x00000010) or 0)+
+		((int1%0x00000040>=0x00000020 ~= (int2%0x00000040>=0x00000020) and 0x00000020) or 0)+
+		((int1%0x00000080>=0x00000040 ~= (int2%0x00000080>=0x00000040) and 0x00000040) or 0)+
+		((int1%0x00000100>=0x00000080 ~= (int2%0x00000100>=0x00000080) and 0x00000080) or 0)+
+		((int1%0x00000200>=0x00000100 ~= (int2%0x00000200>=0x00000100) and 0x00000100) or 0)+
+		((int1%0x00000400>=0x00000200 ~= (int2%0x00000400>=0x00000200) and 0x00000200) or 0)+
+		((int1%0x00000800>=0x00000400 ~= (int2%0x00000800>=0x00000400) and 0x00000400) or 0)+
+		((int1%0x00001000>=0x00000800 ~= (int2%0x00001000>=0x00000800) and 0x00000800) or 0)+
+		((int1%0x00002000>=0x00001000 ~= (int2%0x00002000>=0x00001000) and 0x00001000) or 0)+
+		((int1%0x00004000>=0x00002000 ~= (int2%0x00004000>=0x00002000) and 0x00002000) or 0)+
+		((int1%0x00008000>=0x00004000 ~= (int2%0x00008000>=0x00004000) and 0x00004000) or 0)+
+		((int1%0x00010000>=0x00008000 ~= (int2%0x00010000>=0x00008000) and 0x00008000) or 0)+
+		((int1%0x00020000>=0x00010000 ~= (int2%0x00020000>=0x00010000) and 0x00010000) or 0)+
+		((int1%0x00040000>=0x00020000 ~= (int2%0x00040000>=0x00020000) and 0x00020000) or 0)+
+		((int1%0x00080000>=0x00040000 ~= (int2%0x00080000>=0x00040000) and 0x00040000) or 0)+
+		((int1%0x00100000>=0x00080000 ~= (int2%0x00100000>=0x00080000) and 0x00080000) or 0)+
+		((int1%0x00200000>=0x00100000 ~= (int2%0x00200000>=0x00100000) and 0x00100000) or 0)+
+		((int1%0x00400000>=0x00200000 ~= (int2%0x00400000>=0x00200000) and 0x00200000) or 0)+
+		((int1%0x00800000>=0x00400000 ~= (int2%0x00800000>=0x00400000) and 0x00400000) or 0)+
+		((int1%0x01000000>=0x00800000 ~= (int2%0x01000000>=0x00800000) and 0x00800000) or 0)+
+		((int1%0x02000000>=0x01000000 ~= (int2%0x02000000>=0x01000000) and 0x01000000) or 0)+
+		((int1%0x04000000>=0x02000000 ~= (int2%0x04000000>=0x02000000) and 0x02000000) or 0)+
+		((int1%0x08000000>=0x04000000 ~= (int2%0x08000000>=0x04000000) and 0x04000000) or 0)+
+		((int1%0x10000000>=0x08000000 ~= (int2%0x10000000>=0x08000000) and 0x08000000) or 0)+
+		((int1%0x20000000>=0x10000000 ~= (int2%0x20000000>=0x10000000) and 0x10000000) or 0)+
+		((int1%0x40000000>=0x20000000 ~= (int2%0x40000000>=0x20000000) and 0x20000000) or 0)+
+		((int1%0x80000000>=0x40000000 ~= (int2%0x80000000>=0x40000000) and 0x40000000) or 0)+
+		((int1>=0x80000000 ~= (int2>=0x80000000) and 0x80000000) or 0)
+
+		return (int3 and bxor(ret, int3, ...)) or ret
+	end
+
+	local function bnot(int)
+		return 4294967295 - int
+	end
+
+	local function rshift(int, by)
+		local shifted = int / (2 ^ by)
+		return shifted - shifted % 1
+	end
+
+	local function rrotate(int, by)
+		local shifted = int / (2 ^ by)
+		local fraction = shifted % 1
+		return (shifted - fraction) + fraction * (2 ^ 32)
+	end
+
+	local k = {
+		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+		0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+		0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+		0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+		0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+		0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+		0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+		0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+		0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+		0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+		0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+		0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+		0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+		0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+	}
+
+	local function str2hexa(s)
+		local h = string.gsub(s, ".", function(c)
+			return string.format("%02x", string.byte(c))
+		end)
+		return h
+	end
+
+	local function num2s(l, n)
+		local s = ""
+		for i = 1, n do
+			local rem = l % 256
+			s = string.char(rem) .. s
+			l = (l - rem) / 256
+		end
+		return s
+	end
+
+	local function s232num(s, i)
+		local n = 0
+		for i = i, i + 3 do n = n*256 + string.byte(s, i) end
+		return n
+	end
+
+	local function preproc(msg, len)
+		local extra = 64 - ((len + 1 + 8) % 64)
+		len = num2s(8 * len, 8)
+		msg = msg .. "\128" .. string.rep("\0", extra) .. len
+		return msg
+	end
+
+	local function initH256(H)
+		H[1] = 0x6a09e667
+		H[2] = 0xbb67ae85
+		H[3] = 0x3c6ef372
+		H[4] = 0xa54ff53a
+		H[5] = 0x510e527f
+		H[6] = 0x9b05688c
+		H[7] = 0x1f83d9ab
+		H[8] = 0x5be0cd19
+		return H
+	end
+
+	local function digestblock(msg, i, H)
+		local w = {}
+		for j = 1, 16 do w[j] = s232num(msg, i + (j - 1) * 4) end
+		for j = 17, 64 do
+			local v = w[j - 15]
+			local s0 = bxor(rrotate(v, 7), rrotate(v, 18), rshift(v, 3))
+			v = w[j - 2]
+			local s1 = bxor(rrotate(v, 17), rrotate(v, 19), rshift(v, 10))
+			w[j] = w[j - 16] + s0 + w[j - 7] + s1
+		end
+
+		local a, b, c, d, e, f, g, h = H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8]
+		for i = 1, 64 do
+			local s0 = bxor(rrotate(a, 2), rrotate(a, 13), rrotate(a, 22))
+			local maj = bxor(band(a, b), band(a, c), band(b, c))
+			local t2 = s0 + maj
+			local s1 = bxor(rrotate(e, 6), rrotate(e, 11), rrotate(e, 25))
+			local ch = bxor (band(e, f), band(bnot(e), g))
+			local t1 = h + s1 + ch + k[i] + w[i]
+			h, g, f, e, d, c, b, a = g, f, e, d + t1, c, b, a, t1 + t2
+		end
+
+		H[1] = band(H[1], a)
+		H[2] = band(H[2], b)
+		H[3] = band(H[3], c)
+		H[4] = band(H[4], d)
+		H[5] = band(H[5], e)
+		H[6] = band(H[6], f)
+		H[7] = band(H[7], g)
+		H[8] = band(H[8], h)
+	end
+
+	msg = preproc(msg, #msg)
+	local H = initH256({})
+	for i = 1, #msg, 64 do digestblock(msg, i, H) end
+	return str2hexa(num2s(H[1], 4) .. num2s(H[2], 4) .. num2s(H[3], 4) .. num2s(H[4], 4) ..
+		num2s(H[5], 4) .. num2s(H[6], 4) .. num2s(H[7], 4) .. num2s(H[8], 4))
+end
+
+local function defineSettings() --FINISHED
+	local function username()
+		repeat
+			reset()
+			col(colours.orange)
+			print("Please enter your desired Username")
+			col(colours.white)
+			username = read()
+			if #username <2 then
+				col(colours.red)
+				print("The Endermen hack you in their sleep!")
+				sleep(1.5)
+			end
+		until #username >=2
+		local hash = sha256(username..saltHash)
+		local  userWrite = io.open("/.EnderOS/.userInfo","w")
+		userWrite:write(hash)
+		userWrite:close()
+	end
+	local function password()
+		repeat
+			reset()
+			col(colours.orange)
+			print("Please enter your desired Password")
+			col(colours.white)
+			password = read("*")
+			if #password <=2 then
+				col(colours.red)
+				print("The Endermen hack you in their sleep!")
+				sleep(1.5)
+			end
+		until #password >=2
+		local hash = sha256(password..saltHash)
+		local passWrite = io.open("/.EnderOS/.passInfo","w")
+		passWrite:write(hash)
+		passWrite:close()
+	end
+	local function hint()
+		repeat
+			reset()
+			col(colours.orange)
+			print("Please enter your desired Password hint")
+			col(colours.white)
+			hint = read()
+			if #hint >30 then
+				col(colours.red)
+				print("The Endermen revoke any hint greater than 30 characters!")
+				sleep(1.5)
+			end
+		until #hint <=30
+		local hintWrite = io.open("/.EnderOS/.userHint","w")
+		hintWrite:write(hint)
+		hintWrite:close()
+	end
+	if not fs.exists("/.EnderOS") then
+		fs.makeDir("/.EnderOS")
+	end
+	if fs.exists("/.EnderOS/.userInfo") then
+		local userRead = io.open("/.EnderOS/.userInfo","r")
+		local userContents = userRead:read()
+		userRead:close()
+		if userContents == nil then
+			username()
+		end
+	else
+		username()
+	end
+	if fs.exists("/.EnderOS/.passInfo") then
+		local passRead = io.open("/.EnderOS/.passInfo","r")
+		local passContents = passRead:read()
+		passRead:close()
+		if passContents == nil then
+			password()
+		end
+	else
+		password()
+	end
+	if fs.exists("/.EnderOS/.userHint") then
+		local hintRead = io.open("/.EnderOS/.userHint","r")
+		local hintContents = hintRead:read()
+		hintRead:close()
+		if hintContents == nil then
+			hint()
+		end
+	else
+		hint()
+	end
+	--Create a file saying EnderOS is installed
+	if userContents ~= nil and passContents ~= nil and hintContents ~= nil and not fs.exists("/.EnderOS/.EnderOSisInstalled") then
+		local installC = io.open("/.EnderOS/.EnderOSisInstalled", "w")
+		installC:write("If said user happens to stumble across this file, said user shall leave said file alone!")
+		installC:close()
+	end
+end
+
+local function screen()
+	local screenUI = {
+		{text = "+-------------------------------------------------+", x = 1, y = 1, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 2, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 3, textCol = colours.lime},
+		{text = "EnderOS "..version, x = 19, y = 3, textCol = colours.purple},
+		{text = "|                                                 |", x = 1, y = 4, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 5, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 6, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 7, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 8, textCol = colours.lime},
+		{text = "Username:", x = 10, y = 8, textCol = colours.orange},
+		{text = "|                                                 |", x = 1, y = 9, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 10, textCol = colours.lime},
+		{text = "Password:", x = 10, y = 10, textCol = colours.orange},
+		{text = "|                                                 |", x = 1, y = 11, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 12, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 13, textCol = colours.lime},
+		{text = "Password Hint:", x = 8, y = 13, textCol = colours.blue},
+		{text = "|                                                 |", x = 1, y = 14, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 15, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 16, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 17, textCol = colours.lime},
+		{text = "|                                                 |", x = 1, y = 18, textCol = colours.lime},
+		{text = "+-------------------------------------------------+", x = 1, y = 19, textCol = colours.lime}
+	}
+	term.clear()
+	term.setCursorPos(1,1)
+	for k,v in pairs(screenUI) do
+		term.setCursorPos(v.x,v.y)
+		col(v.textCol)
+		term.write(v.text)
+	end
+	randomGen()
+end
+
+local function login()
+	reset()
+	if fs.exists("/.EnderOS/.lock") then --Checks if the user locked his/her computer
+		term.setBackgroundColor(colours.black)
+		userRead = io.open("/.EnderOS/.userInfo","r")
+		userContents = userRead:read()
+		userRead:close()
+		passRead = io.open("/.EnderOS/.passInfo","r")
+		passContents = passRead:read()
+		passRead:close()
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			term.setCursorPos(11,4)
+			col(colours.purple)
+			term.write("This computer has been locked!")
+			term.setCursorPos(15,8)
+			col(colours.orange)
+			term.write("Username:")
+			term.setCursorPos(15,10)
+			term.write("Password:")
+			term.setCursorPos(25,8)
+			col(colours.white)
+			username = read()
+			hashUsername = sha256(username..saltHash)
+			term.setCursorPos(25,10)
+			password = read("*")
+			hashPassword = sha256(password..saltHash)
+		until hashUsername == userContents and hashPassword == passContents
+		fs.delete("/.EnderOS/.lock")
+		return
+	end
+	userRead = io.open("/.EnderOS/.userInfo","r")
+	userContents = userRead:read()
+	userRead:close()
+	passRead = io.open("/.EnderOS/.passInfo","r")
+	passContents = passRead:read()
+	passRead:close()
+	hintRead = io.open("/.EnderOS/.userHint","r")
+	hintContents = hintRead:read()
+	hintRead:close()
+	while true do
+		repeat
+			screen()
+			term.setCursorPos(23,13)
+			col(colours.lightGrey)
+			print(hintContents)
+			col(colours.white)
+			term.setCursorPos(20,8)
+			col(colours.white)
+			username = read()
+			hashU = sha256(username..saltHash)
+			term.setCursorPos(20,10)
+			col(colours.white)
+			password = read("*")
+			hashP = sha256(password..saltHash)
+		until hashU == userContents and hashP == passContents
+		break
+	end
+	reset()
+end
+
+local function settings()
+	local function changeUsername()
+		local handle = io.open("/.EnderOS/.passInfo","r")
+		local contents = handle:read()
+		handle:close()
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			col(colours.orange)
+			term.setCursorPos(2,2)
+			term.write("Please enter your password: ")
+			col(colours.white)
+			term.setCursorPos(2,3)
+			local input = read("*")
+			hash = sha256(input..saltHash)
+			if hash ~= passContents then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("Invalid password")
+				sleep(1.5)
+			end
+		until hash == passContents
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			col(colours.orange)
+			term.setCursorPos(2,2)
+			term.write("Enter new username:")
+			col(colours.white)
+			term.setCursorPos(2,3)
+			username = read()
+			if #username<2 then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("The Endermen hack you in their sleep!")
+				sleep(3)
+			end
+		until #username>=2
+		local hash = sha256(username..saltHash)
+		local handle = io.open("/.EnderOS/.userInfo","w")
+		handle:write(hash)
+		handle:close()
+		col(colours.lightBlue)
+		term.setCursorPos(2,4)
+		term.write("Your new username is "..username)
+		sleep(2)
+	end
+	local function changePassword()
+		local handle = io.open("/.EnderOS/.passInfo","r")
+		local contents = handle:read()
+		handle:close()
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			col(colours.orange)
+			term.setCursorPos(2,2)
+			term.write("Please enter your password: ")
+			col(colours.white)
+			term.setCursorPos(2,3)
+			local input = read("*")
+			local hash = sha256(input..saltHash)
+			if hash ~= passContents then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("Invalid password")
+				sleep(1.5)
+			end
+		until hash == passContents
+		sleep(0.1)
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			col(colours.orange)
+			term.setCursorPos(2,2)
+			term.write("Enter new password: ")
+			col(colours.white)
+			term.setCursorPos(2,3)
+			password = read("*")
+			if #password <2 then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("The Endermen hack you in their sleep!")
+				sleep(3)
+			elseif password == contents then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("You cannot have the same username and password")
+				sleep(3)
+			end
+		until #password >=2
+		local hash = sha256(password..saltHash)
+		local handle = io.open("/.EnderOS/.passInfo","w")
+		handle:write(hash)
+		handle:close()
+		col(colours.lightBlue)
+		term.setCursorPos(2,3)
+		term.write("Your new password is "..password)
+		sleep(2)
+	end
+	local function changeHint()
+		repeat
+			reset()
+			col(colours.lime)
+			frame()
+			col(colours.orange)
+			term.setCursorPos(2,2)
+			print("Enter new hint: ")
+			col(colours.white)
+			term.setCursorPos(2,3)
+			hint = read()
+			if #hint >30 then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				term.write("This Hint exceeds the max hint length of 30!")
+				sleep(3)
+			end
+		until #hint <=30
+		if hint == nil then return error("EnderOS has crashed: attempt to get length of nil; hint returned nil?") end
+		local handle = io.open("/.EnderOS/.userHint","w")
+		handle:write(hint)
+		handle:close()
+		col(colours.lightBlue)
+		term.setCursorPos(2,4)
+		term.write("Your new hint is "..hint)
+		sleep(2)
+	end
+	local function uninstall()
+		reset()
+		fs.delete("/.EnderOS")
+		if fs.exists("/EnderOS") then fs.delete("/EnderOS") end
+		local handle = fs.open("/startup","r")
+		local lines = handle.readLine()
+		local newHandle = fs.open("/EnderOS","w")
+		for lines in handle.readLine do
+			newHandle.writeLine(lines)
+		end
+		handle.close()
+		newHandle.close()
+		fs.delete("/startup")
+		return os.run({},"rom/programs/shell")
+	end
+	while true do
+		reset()
+		frame()
+		bracket(uiS["settings"])
+		local _, button, xPos, yPos = os.pullEvent("mouse_click")
+		if button == 1 then
+			for k,tab in pairs(uiS["settings"]) do
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "back" then
+						return
+					elseif tab.option == "changeUsername" then
+						changeUsername()
+						return settings()
+					elseif tab.option == "changePassword" then
+						changePassword()
+						return settings()
+					elseif tab.option == "changeHint" then
+						changeHint()
+						return settings()
+					elseif tab.option == "uninstall" then
+						uninstall()
+					end
+				end
+			end
+		end
+	end
+end
+
+local function programs()
+	reset()
+	col(colours.lime)
+	frame()
+	bracket(uiS["programs"])
+	while true do
+		local _,button,xPos,yPos = os.pullEvent("mouse_click")
+		if button == 1 then
+			for k,tab in pairs(uiS["programs"]) do
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "back" then
+						return
+					elseif tab.option == "firewolf" then
+						shell.run("/.EnderOS/.firewolf")
+						return programs()
+					end
+				end
+			end
+		end
+	end
+end
+
+local function edit()
+	local success = true
+	local edit = true
+	repeat
+		reset()
+		col(colours.orange)
+		print("What file do you wish to edit? Type exit() to return to the desktop")
+		col(colours.white)
+		file = read()
+		if file == "exit()" then
+			edit = false
+		elseif fs.isDir(file) then
+			col(colours.red)
+			term.write("Invalid Arguement: Cannot edit a directory")
+			sleep(1.5)
+			return edit()
+		elseif fs.isReadOnly(file) then
+			col(colours.red)
+			term.write("Invalid Arguement: Read-Only file")
+			sleep(1.5)
+		end
+	until not fs.isDir(file) and not fs.isReadOnly(file) or edit == false
+	if edit == false then
+		return
+	else
+		shell.run("edit",file)
+	end
+end
+
+local function fileManager()
+	reset()
+	col(colours.lime)
+	frame()
+	bracket(uiS["fileManagerWords"])
+	while true do
+		local _, p1, xPos, yPos = os.pullEvent("mouse_click")
+		if p1 == 1 then
+			for k,tab in pairs(uiS["fileManagerWords"]) do
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "back" then
+						return
+					elseif tab.option == "edit" then
+						edit()
+						return fileManager()
+					end
+				end
+			end
+		end	
+	end
+end
+
+local function scroll(text,x,y)
+	col(colours.lightBlue)
+	local offset = 0
+	local lines = shell.programs()
+	local termw, termh = term.getSize()
+	
+	local redraw = function()
+		frame()
+		term.setCursorPos(x-1,y)
+		col(colours.lightGray)
+		term.write("[")
+		term.setCursorPos(#text+x,y)
+		term.write("]")
+		col(colours.purple)
+		term.setCursorPos(x,y)
+		term.write(text)
+		col(colours.lightBlue)
+		for i = 2, termh-1 do
+			term.setCursorPos(2, i)
+			term.write(lines[i + offset])
+		end
+	end
+	redraw()
+	
+	local running = true
+	while running do
+		term.setCursorPos(26,18)
+		col(colours.yellow)
+		print("Press any key to continue")
+		local event, p1, xPos, yPos = os.pullEvent()
+		if event == "mouse_scroll" then
+			if p1 == 1 and offset < math.max(#lines - termh, 0) then
+				offset = offset + 1
+				redraw()
+			end
+			if p1 == -1 and offset > 0 then
+				offset = offset - 1
+				redraw()
+			end
+		end
+		if event == "key" then 
+			running = false
+			return running
+		end
+	end
+end
+
+local function renameFile()
+	term.setCursorPos(2,2)
+	scroll("Rename File",21,1)
+	frame()
+	term.setCursorPos(32,18)
+	col(colours.yellow)
+	term.write("Type exit() to exit")
+	term.setCursorPos(2,2)
+	col(colours.orange)
+	print("What file would you like to rename?")
+	repeat
+		col(colours.white)
+		term.setCursorPos(2,3)
+		input = read()
+		col(colours.red)
+		if input == "exit()" then
+			return
+		end
+		if fs.isDir(input) then
+			term.write("Invalid Arguement: Cannot edit a directory")
+			sleep(1.5)
+			return renameFile()
+		elseif fs.isReadOnly(input) then
+			term.write("Invalid Arguement: Read-Only file")
+			sleep(1.5)
+			return renameFile()
+		elseif not fs.exists(input) then
+			term.write("Invalid Arguement: No such file")
+			sleep(1.5)
+			return renameFile()
+		end
+	until (success) and not fs.isDir(input) and not fs.isReadOnly(input) and fs.exists(input)
+end
+	
+local function bootOS()
+	local function redraw()
+		reset()
+		col(colours.purple)
+		print("--------------------------------------------------")
+		col(colours.orange)
+		print(" Initializing...")
+		col(colours.purple)
+		print("--------------------------------------------------")
+		col(colours.white)
+	end
+	redraw()
+	--if shell.getRunningProgram() ~= "startup" then return error("EnderOS must be contained in a startup file") end
+	if not http then return error("HTTP must be enabled to use EnderOS") end
+	if not term.isColor and not term.isColor() then
+		return error("Advanced computers are needed to run EnderOS")
+	elseif not term.isColor or not term.isColor() then
+		return error("Advanced computers are needed to run EnderOS")
+	end
+	col(colours.blue)
+	print("OS booting...")
+	sleep(0.2)
+	redraw()
+	defineSettings()
+	col(colours.blue)
+	print("Settings loaded...")
+	sleep(0.2)
+	redraw()
+	col(colours.blue)
+	print("Checking for updates...")
+	sleep(0.2)
+	local response = http.get("https://raw.github.com/SuicidalSTDz/EnderOS/master/config")
+	local data  = {}
+	local sResponse = response.readLine()
+	for sResponse in response.readLine do
+		table.insert(data,sResponse)
+	end
+	response.close()
+	if enderOSID ~= data[1] then
+		col(colours.yellow)
+		shell.run("pastebin","get",(data[1]),"/.EnderOS/.EnderOSUpdate")
+		if not fs.exists("/.EnderOS/.EnderOSUpdate") then
+			col(colours.red)
+			print("An error has occurred while updating EnderOS")
+			sleep(2)
+			os.run({},"rom/programs/shell")
+		else
+			fs.delete("startup")
+			fs.move("/.EnderOS/.EnderOSUpdate","startup")
+			col(colours.lime)
+			print("EnderOS has updated successfully...")
+			sleep(1)
+			redraw()
+		end
+	end
+	if adventureCraft ~= data[2] then
+		shell.run("pastebin","get",data[2],"/.EnderOS/.adventureCraftUpdate")
+		if not fs.exists("/.EnderOS/.adventureCraftUpdate") then
+			print("An error has occurred while updating AdventureCraft")
+			sleep(2)
+		else
+			fs.delete("/.EnderOS/.adventureCraft")
+			fs.move("/.EnderOS/.adventureCraftUpdate","/.EnderOS/.adventureCraft")
+			print("AdventureCraft updated successfully...")
+			sleep(1)
+		end
+	end
+	if firewolf ~= data[3] then
+		shell.run("pastebin","get",data[3],"/.EnderOS/.firewolfUpdate")
+		if not fs.exists("/.EnderOS/.firewolfUpdate") then
+			print("An error has occurred while updating Firewolf")
+			sleep(2)
+		else
+			fs.delete("/.EnderOS/.firewolf")
+			fs.move("/.EnderOS/.firewolfUpdate","/.EnderOS/.firewolf")
+			print("Firewolf updated successfully...")
+			sleep(1)
+		end
+	end
+	if skullPong ~= data[4] then
+		shell.run("pastebin","get",data[4],"/.EnderOS/.skullPongUpdate")
+		if not fs.exists("/.EnderOS/.skullPongUpdate") then
+			print("An error has occurred while updating SkullPong")
+			sleep(2)
+		else
+			fs.delete("/.EnderOS/.skullPong")
+			fs.move("/.EnderOS/.skullPongUpdate","/.EnderOS/.skullPong")
+			print("SkullPong updated successfully...")
+			sleep(1)
+		end
+	end
+	if guessThatColor ~= data[5] then
+		shell.run("pastebin","get",data[4],"/.EnderOS/.guessThatColorUpdate")
+		if not fs.exists("/.EnderOS/.guessThatColorUpdate") then
+			print("An error has occurred while updating Guess That Color")
+			sleep(2)
+		else
+			fs.delete("/.EnderOS/.guessThatColor")
+			fs.move("/.EnderOS/.guessThatColorUpdate","/.EnderOS/.guessThatColor")
+			print("Guess That Color updated successfully")
+			sleep(1)
+		end
+	end
+	col(colours.lime)
+	print(" Applied updates successfully...")
+	sleep(0.2)
+	redraw()
+	col(colours.blue)
+	print("Loading Games...")
+	sleep(0.2)
+	if fs.exists("/.EnderOS/.adventureCraft") then
+		col(colours.lime)
+		print(" AdventureCraft loaded...")
+		sleep(0.2)
+	else
+		col(colours.red)
+		print(" AdventureCraft is missing")
+		col(colours.yellow)
+		shell.run("pastebin","get",adventureCraft,"/.EnderOS/.adventureCraft")
+		if not fs.exists("/.EnderOS/.adventureCraft") then
+			col(colours.red)
+			print(" AdventureCraft is either corrupt or was not downloaded properly")
+			sleep(0.2)
+		else
+			col(colours.lime)
+			print(" AdventureCraft loaded...")
+			sleep(0.2)
+		end
+	end
+	if fs.exists("/.EnderOS/.skullPong") then
+		col(colours.lime)
+		print(" SkullPong loaded...")
+		sleep(0.2)
+	else
+		col(colours.red)
+		print(" SkullPong is missing")
+		col(colours.yellow)
+		shell.run("pastebin","get",skullPong,"/.EnderOS/.skullPong")
+		if not fs.exists("/.EnderOS/.skullPong") then
+			col(colours.red)
+			print(" SkullPong is either corrupt or was not downloaded properly")
+			sleep(0.2)
+		else
+			col(colours.lime)
+			print(" SkullPong loaded...")
+			sleep(0.2)
+		end
+	end
+	if fs.exists("/.EnderOS/.guessThatColor") then
+		col(colours.lime)
+		print(" Guess That Color loaded...")
+		sleep(0.2)
+	else
+		col(colours.red)
+		print(" Guess That Color is missing")
+		col(colours.yellow)
+		shell.run("pastebin","get",guessThatColor,"/.EnderOS/.guessThatColor")
+		if not fs.exists("/.EnderOS/.guessThatColor") then
+			col(colours.red)
+			print(" Guess That Color is either corrupt or was not downloaded properly")
+			sleep(0.2)
+		else
+			col(colours.lime)
+			print(" Guess That Color loaded...")
+			sleep(0.2)
+		end
+	end
+	col(colours.blue)
+	print("Games loaded!")
+	sleep(0.2)
+	redraw()
+	col(colours.blue)
+	print("Loading programs...")
+	sleep(0.2)
+	if fs.exists("/.EnderOS/.firewolf") then
+		col(colours.lime)
+		print(" Firewolf loaded...")
+		sleep(0.2)
+	else
+		col(colours.red)
+		print(" Firewolf is missing")
+		col(colours.yellow)
+		shell.run("pastebin","get",firewolf,"/.EnderOS/.firewolf")
+		if not fs.exists("/.EnderOS/.firewolf") then
+			col(colours.red)
+			print(" Firewolf is either corrupt or was not downloaded properly")
+			sleep(0.2)
+		else
+			col(colours.lime)
+			print(" Firewolf loaded...")
+			sleep(0.2)
+		end
+	end
+	col(colours.blue)
+	print("Programs loaded!")
+	sleep(0.2)
+	redraw()
+	col(colours.blue)
+	print("EnderOS has successfully booted!")
+	sleep(0.2)
+end
+
+local function games()
+	reset()
+	col(colours.lime)
+	frame()
+	bracket(uiS["games"])
+	while true do
+		local _,button,xPos,yPos = os.pullEvent("mouse_click")
+		if button == 1 then
+			for k,tab in pairs(uiS["games"]) do
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "back" then
+						return
+					elseif tab.option == "skullPong" then
+						shell.run("/.EnderOS/.skullPong")
+						return games()
+					elseif tab.option == "adventureCraft" then
+						shell.run("/.EnderOS/.adventureCraft")
+						return games()
+					elseif tab.option == "guessThatColor" then
+						shell.run("/.EnderOS/.guessThatColor")
+						return games()
+					elseif tab.option == "calculator" then
+						if not fs.exists("/.EnderOS/.calculator") then
+							col(colours.red)
+							print("This game seems to be missing or corrupt")
+							sleep(1)
+						else
+							shell.run("/.EnderOS/.calculator")
+							return games()
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+local function mainOS()
+	while true do
+		col(colours.lime)
+		frame()
+		bracket(uiS["desktopWords"])
+		local _, p1, xPos, yPos = os.pullEvent("mouse_click")
+		for k,tab in pairs(uiS["desktopWords"]) do
+			if p1 == 1 then
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "programs" then
+						programs()
+						return mainOS()
+					elseif tab.option == "fileManager" then
+						fileManager()
+						return mainOS()
+					elseif tab.option == "games" then
+						games()
+						return mainOS()
+					elseif tab.option == "settings" then
+						settings()
+						return mainOS()
+					elseif tab.option == "logOff" then
+						login()
+						return mainOS()
+					elseif tab.option == "lock" then
+						local handle = io.open("/.EnderOS/.lock","w")
+						handle:write("This computer is locked by the Endermen")
+						handle:close()
+						login()
+					elseif tab.option == "reboot" then
+						return os.reboot()
+					elseif tab.option == "shutdown" then
+						return os.shutdown()
+					elseif tab.option == "exit" then
+						reset()
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+bootOS()
+login()
+mainOS()
