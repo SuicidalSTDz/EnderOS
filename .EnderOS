@@ -52,10 +52,11 @@ local adventureCraft = "xkD4FcaB"
 local firewolf = "A7wGH3ty"
 local skullPong = "8LU0sjFR"
 local guessThatColor = "cQ1CbfAg"
+local highRoller = "eqxFPyS5"
 
 
 local uiS = {
-  ["desktopWords"] = {
+	["desktopWords"] = {
 		{text = "EnderOS "..version,x1 = 19,x2 = string.len("EnderOS "..version)+20,y = 1, col = colours.purple,option = nil},
 		{text = "Log Off",x1 = 3,x2 = 11,y = 19,col = colours.lightBlue,option = "logOff"},
 		{text = "Lock",x1 = 14,x2 = 19,y = 19,col = colours.lightBlue,option = "lock"},
@@ -643,7 +644,7 @@ local function settings()
 		handle:write(hash)
 		handle:close()
 		col(colours.lightBlue)
-		term.setCursorPos(2,3)
+		term.setCursorPos(2,4)
 		term.write("Your new password is "..password)
 		sleep(2)
 	end
@@ -1086,20 +1087,22 @@ local function games()
 					if tab.option == "back" then
 						return
 					elseif tab.option == "skullPong" then
-						shell.run("/.EnderOS/.skullPong")
-						return games()
+						if fs.exists("/.EnderOS/.skullPong") then
+							shell.run("/.EnderOS/.skullPong")
+							return games()
+						end
 					elseif tab.option == "adventureCraft" then
-						shell.run("/.EnderOS/.adventureCraft")
-						return games()
+						if fs.exists("/.EnderOS/.adventureCraft") then
+							shell.run("/.EnderOS/.adventureCraft")
+							return games()
+						end
 					elseif tab.option == "guessThatColor" then
-						shell.run("/.EnderOS/.guessThatColor")
-						return games()
+						if fs.exists("/.EnderOS/.guessThatColor") then
+							shell.run("/.EnderOS/.guessThatColor")
+							return games()
+						end
 					elseif tab.option == "calculator" then
 						if not fs.exists("/.EnderOS/.calculator") then
-							col(colours.red)
-							print("This game seems to be missing or corrupt")
-							sleep(1)
-						else
 							shell.run("/.EnderOS/.calculator")
 							return games()
 						end
