@@ -7,158 +7,180 @@
 --This Graphical Shell stores User information in a hashed form. Making "hackers" tremble in fear >:) Not really...
 --The hash that EnderOS uses is Sha-256 and makes storage safer :)
 
---If you find any bugs(I know there are a few) please report them on the CC Forums on the EnderOS thread!
+--[[Games]]--
+--SkullPong by Skullblade
+--FireWolf by GravityScore
+--A Calculator by Engineer
+--Guess That Color! by me
+
+--If you find any bugs please report them on the EnderOS thread!
+--You can also report bugs here: http://suicidalstdz.koding.com/main.php
 --Thank you for using EnderOS and enjoy!
 
---Games
---EnderOS includes SkullPong by Skullblade, AdventureCraft by Mikee251, and FireWolf by GravityScore
-
---[[
-local tab = {
-" _____       _         _____ _____                 ";
-"|   __|___ _| |___ ___|     |   __|                ";
-"|   __|   | . | -_|  _|  |  |__   |                ";
-"|_____|_|_|___|___|_| |_____|_____|                ";
-"                                                   ";
-"                                                   ";
-" _____                                             ";
-"| __  |_ _                                         ";
-"| __ -| | |                                        ";
-"|_____|_  |                                        ";
-"      |___|                                        ";
-"                                                   ";
-" _____     _     _   _     _ _____ _____ ____      ";
-"|   __|_ _|_|___|_|_| |___| |   __|_   _|    \\ ___ ";
-"|__   | | | |  _| | . | .'| |__   | | | |  |  |- _|";
-"|_____|___|_|___|_|___|__,|_|_____| |_| |____/|___|";
-}
-term.setTextColor(colors.purple)
-term.clear()
-term.setCursorPos(1,1)
-for i = 1,#tab do
-  print(tab[i])
-end
-]]--
+--[[Prevent Termination]]--
+os.pullEvent = os.pullEventRaw
 
 --[[Variables]]--
-local w,h = term.getSize()
-local version = "v3.1"
-local col = term.setTextColor
-local saltHash = "T01hFg62zY"
+local w, h = term.getSize()
+local version = "v4.0"
+local col = term.setTextColour
+local saltHash = "something"
 
 --[[Programs]]--
-local enderOSID = "Vx4Xapyt"
-local adventureCraft = "xkD4FcaB"
 local firewolf = "A7wGH3ty"
 local skullPong = "8LU0sjFR"
 local guessThatColor = "cQ1CbfAg"
-local highRoller = "eqxFPyS5"
+local calculator = "8c2hztcz"
 
-
-local uiS = {
-	["desktopWords"] = {
-		{text = "EnderOS "..version,x1 = 19,x2 = string.len("EnderOS "..version)+20,y = 1, col = colours.purple,option = nil},
-		{text = "Log Off",x1 = 3,x2 = 11,y = 19,col = colours.lightBlue,option = "logOff"},
-		{text = "Lock",x1 = 14,x2 = 19,y = 19,col = colours.lightBlue,option = "lock"},
-		{text = "Exit",x1 = 22,x2 = 27,y = 19,col = colours.lightBlue,option = "exit"},
-		{text = "Reboot",x1 = 30,x2 = 37,y = 19,col = colours.lightBlue,option = "reboot"},
-		{text = "Shutdown",x1 = 40,x2 = 49,y = 19,col = colours.lightBlue,option = "shutdown"},
-		{text = "File Manager",x1 = 3, x2 = 16, y = 3, col = colours.orange,option = "fileManager"},
-		{text = "Programs",x1 = 19,x2 = 28,y = 3,col = colours.orange,option = "programs"},
-		{text = "Games",x1 = 31,x2 = 37,y = 3,col = colours.orange,option = "games"},
-		{text = "Settings",x1 = 40,x2 = 49,y = 3,col = colours.orange,option = "settings"}
+--[[Tables]]--
+local logo = {
+	" _____       _         _____ _____ ";
+	"|   __|___ _| |___ ___|     |   __|";
+	"|   __|   | . | -_|  _|  |  |__   |";
+	"|_____|_|_|___|___|_| |_____|_____|";
+	"                                                   ";
+	"                                                   ";
+	" _____     ";
+	"| __  |_ _ ";
+	"| __ -| | |";
+	"|_____|_  |";
+	"      |___|";
+	"                                                   ";
+	" _____     _     _   _     _ _____ _____ ____      ";
+	"|   __|_ _|_|___|_|_| |___| |   __|_   _|    \\ ___ ";
+	"|__   | | | |  _| | . | .'| |__   | | | |  |  |- _|";
+	"|_____|___|_|___|_|___|__,|_|_____| |_| |____/|___|";
+}
+local main = {
+	["desktop"] = {
+		{text = "Log Off", x1 = 3, x2 = 11, y = 19, col = colours.white, bgColour = colours.purple, bracketCol = colours.black, option = "logOff"},
+		{text = "Lock", x1 = 14, x2 = 19, y = 19, col = colours.white, bgColour = colours.purple, bracketCol = colours.black, option = "lock"},
+		{text = "Exit", x1 = 22, x2 = 27, y = 19, col = colours.white, bgColour = colours.purple, bracketCol = colours.black, option = "exit"},
+		{text = "Reboot", x1 = 30, x2 = 37, y = 19, col = colours.white, bgColour = colours.purple, bracketCol = colours.black, option = "reboot"},
+		{text = "Shutdown", x1 = 40, x2 = 49, y = 19, col = colours.white, bgColour = colours.purple, bracketCol = colours.black, option = "shutdown"},
+		{text = "File Manager", x1 = 2, x2 = 15, y = 3, col = colours.lime, bgColour = colours.black, bracketCol = colours.lightGrey, option = "fileManager"},
+		{text = "Programs", x1 = 18, x2 = 27, y = 3, col = colours.lime, bgColour = colours.black, bracketCol = colours.lightGrey, option = "programs"},
+		{text = "Games", x1 = 30, x2 = 36, y = 3, col = colours.lime, bgColour = colours.black, bracketCol = colours.lightGrey, option = "games"},
+		{text = "Settings", x1 = 39, x2 = 48, y = 3, col = colours.lime, bgColour = colours.black, bracketCol = colours.lightGrey, option = "settings"}
 	},
-	["fileManagerWords"] = {
-		{text = "File Manager",x1 = 19,x2 = 32,y = 1,col = colours.purple,option = nil},
-		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
-		{text = "Edit",x1 = 4,x2 = 9,y = 3,col = colours.orange,option = "edit"}
+	["fileManager"] = {
+		{text = "Back", x1 = 2, x2 = 7, y = h, col = colours.white, bracketCol = colours.black, bgColour = colours.purple, option = "back"},
+		{text = "Edit", x1 = 2, x2 = 7, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "edit"},
+		{text = "Rename", x1 = 10, x2 = 17, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "rename"},
+		{text = "Copy", x1 = 20, x2 = 25, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "copy"},
+		{text = "Move", x1 = 28, x2 = 33, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "move"},
+		{text = "Delete", x1 = 36, x2 = 43, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "delete"},
+		{text = "Run", x1 = 46, x2 = 50, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "run"}
 	},
 	["settings"] = {
-		{text = "Settings",x1 = 20,x2 = 29,y = 1,col = colours.purple,option = nil},
-		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
-		{text = "Username",x1 = 3,x2 = 12,y = 3,col = colours.orange,option = "changeUsername"},
-		{text = "Password",x1 = 15,x2 = 24,y = 3,col = colours.orange,option = "changePassword"},
-		{text = "Hint",x1 = 27,x2 = 32,y = 3,col = colours.orange,option = "changeHint"},
-		{text = "Uninstall",x1 = 35,x2 = 45,y = 3,col = colours.orange,option = "uninstall"}
-	},
-	["games"] = {
-		{text = "Games",x1 = 22,x2 = 28,y = 1,col = colours.purple,option = nil},
-		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
-		{text = "SkullPong",x1 = 3,x2 = 13,y = 3,col = colours.orange,option = "skullPong"},
-		{text = "AdventureCraft",x1 = 16,x2 = 31,y = 3,col = colours.orange,option = "adventureCraft"},
-		{text = "Guess That Color!",x1 = 3,x2 = 21,y = 5,col = colours.orange,option = "guessThatColor"}
+		{text = "Back", x1 = 2, x2 = 7, y = h, col = colours.white, bracketCol = colours.black, bgColour = colours.purple, option = "back"},
+		{text = "Username", x1 = 2, x2 = 11, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "changeUsername"},
+		{text = "Password", x1 = 14, x2 = 23, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "changePassword"},
+		{text = "Hint", x1 = 26, x2 = 31, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "changeHint"},
+		{text = "Uninstall", x1 = 34, x2 = 44, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "uninstall"}
 	},
 	["programs"] = {
-		{text = "Programs",x1 = 20,x2 = 29,y = 1,col = colours.purple,option = nil},
-		{text = "Back",x1 = 4,x2 = 9,y = 1,col = colours.red,option = "back"},
-		{text = "Firewolf",x1 = 3,x2 = 12,y = 3,col = colours.orange,option = "firewolf"},
-		{text = "Caclulator",x1 = 15,x2 = 26,y = 3,col = colours.orange,option = "calculator"}
+		{text = "Back", x1 = 2, x2 = 7, y = h, col = colours.white, bracketCol = colours.black, bgColour = colours.purple, option = "back"},
+		{text = "Firewolf", x1 = 3, x2 = 12, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "firewolf"},
+		{text = "Caclulator", x1 = 15, x2 = 26, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "calculator"}
+	},
+	["games"] = {
+		{text = "Back", x1 = 2, x2 = 7, y = h, col = colours.white, bracketCol = colours.black, bgColour = colours.purple, option = "back"},
+		{text = "SkullPong", x1 = 2, x2 = 12, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "skullPong"},
+		{text = "Guess That Color!", x1 = 15, x2 = 33, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "guessThatColor"}
+	}
+}
+local boot = {
+	["files"] = {
+		{file = "/.calculator", id = calculator},
+		{file = "/.firewolf", id = firewolf},
+		{file = "/.guessThatColor", id = guessThatColor},
+		{file = "/.skullPong", id = skullPong}
 	}
 }
 
+--[[Functions]]--
 local function reset()
 	term.clear()
 	term.setCursorPos(1,1)
 end
-
+local function center(text, y)
+  term.setCursorPos(((w-#text)/2)+1,y)
+  write(text)
+end
+local function day_time()
+	term.setCursorPos(1,1)
+	term.setBackgroundColour(colours.purple)
+	col(colours.white)
+	term.write("Day "..math.floor(os.day()))
+	local mc_time = textutils.formatTime(os.time(),false)
+	term.setCursorPos(w-8,1)
+	string.rep("",8)
+	term.setCursorPos((w-#mc_time)+1,1)
+	term.write(mc_time)
+	term.setBackgroundColour(colours.black)
+end
+local function limitRead(limit, char)
+	term.setCursorBlink(true)
+	local input = ""
+	if char == "" then char = nil end
+	repeat
+		local event, p1 = os.pullEvent()
+		if event == "char" then
+			if #input + 1 <= limit then
+				input = input..p1
+				write(char or p1)
+			end
+		elseif event == "key" and p1 == keys.backspace and #input >= 1 then
+			input = string.sub(input, 1, #input-1)
+			xPos, yPos = term.getCursorPos()
+			term.setCursorPos(xPos-1, yPos)
+			write(" ")
+			term.setCursorPos(xPos-1, yPos)
+		end
+	until event == "key" and p1 == keys.enter
+	term.setCursorBlink(false)
+	return input
+end
 local function bracket(tab)
-	for k,v in pairs(tab) do
+	for _,v in pairs(tab) do
 		term.setCursorPos(v.x1,v.y)
-		term.setTextColour(colours.lightGrey)
+		term.setTextColour(v.bracketCol)
+		term.setBackgroundColour(v.bgColour)
 		term.write("[")
 		term.setCursorPos(v.x2,v.y)
 		term.write("]")
 		term.setCursorPos(v.x1+1,v.y)
 		term.setTextColour(v.col)
+		term.setBackgroundColour(v.bgColour)
 		term.write(v.text)
 	end
 end
-
-function frame()
-	col(colours.lime)
-	print("+-------------------------------------------------+")
-        for i = 1,17 do
-            print("|                                                 |")
-        end
-	term.write("+-------------------------------------------------+")
+local function brackets(x, y, text, colour, bracketCol)
+	term.setCursorPos(x-1,y)
+	col(bracketCol or colours.lightGrey)
+	term.write("[")
+	term.setCursorPos(x+#text,y)
+	term.write("]")
+	term.setCursorPos(x,y)
+	col(colour)
+	term.write(text)
 	col(colours.white)
 end
-
-local function randomGen()
-	local randomWords = {
-		"Hello fellow Minecrafter!",
-		"Coded by SuicidalSTDz!",
-		"Catch me if you can!",
-		"Sha256 is NOT encryption!",
-		"Fight through the night!",
-		"The Endermen approve, do you?",
-		"Hate FORTH? Get Lua!",
-		"Who's Notch?!"
-	}
-	local color = {
-		[1] = colours.white,
-		[2] = colours.orange,
-		[3] = colours.magenta,
-		[4] = colours.lightBlue,
-		[5] = colours.yellow,
-		[6] = colours.lime,
-		[7] = colours.pink,
-		[8] = colours.gray,
-		[9] = colours.lightGray,
-		[10] = colours.cyan,
-		[11] = colours.purple,
-		[12] = colours.blue,
-		[13] = colours.brown,
-		[14] = colours.green,
-		[15] = colours.red
-	}
-	local motd = math.random(1,#randomWords)
-	local randomCol = math.random(1,#color)
-	col(color[randomCol])
-	term.setCursorPos((w-#randomWords[motd])/2,18)
-	term.write(randomWords[motd])
+local function pastebinGet(code, path)
+	local sPath = shell.resolve(path)
+	local response = http.get("http://pastebin.com/raw.php?i="..textutils.urlEncode(code))
+	if response then
+		local contents = response.readAll()
+		response.close()
+		local file = fs.open( sPath, "w" )
+		file.write(contents)
+		file.close()
+		return true
+	else
+		return false
+	end	
 end
-
 local function sha256(msg)
 	local function band(int1, int2, int3, ...)
 		local ret =
@@ -350,63 +372,54 @@ local function sha256(msg)
 	return str2hexa(num2s(H[1], 4) .. num2s(H[2], 4) .. num2s(H[3], 4) .. num2s(H[4], 4) ..
 		num2s(H[5], 4) .. num2s(H[6], 4) .. num2s(H[7], 4) .. num2s(H[8], 4))
 end
-
-local function defineSettings() --FINISHED
+local function defineSettings()
+	local function redraw(header, footer)
+		reset()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		col(colours.white)
+		center(footer,h)
+		center(header,1)
+		print()
+		term.setBackgroundColour(colours.black)
+		col(colours.white)
+	end
 	local function username()
 		repeat
-			reset()
-			col(colours.orange)
-			print("Please enter your desired Username")
-			col(colours.white)
-			username = read()
-			if #username <2 then
+			redraw("Please enter your desired Username", "Your Username may be up to 28 characters long")
+			username = limitRead(28)
+			if #username < 2 then
 				col(colours.red)
-				print("The Endermen hack you in their sleep!")
+				write("\nThe Endermen hack you in their sleep!")
 				sleep(1.5)
 			end
-		until #username >=2
-		local hash = sha256(username..saltHash)
+		until #username >= 2 and #username <= 28
 		local  userWrite = io.open("/.EnderOS/.userInfo","w")
-		userWrite:write(hash)
+		userWrite:write(sha256(username..saltHash))
 		userWrite:close()
 	end
 	local function password()
 		repeat
-			reset()
-			col(colours.orange)
-			print("Please enter your desired Password")
-			col(colours.white)
-			password = read("*")
-			if #password <=2 then
+			redraw("Please enter your desired Password", "Your Password may be up to 28 characters long")
+			password = limitRead(28, "*")
+			if #password < 2 then
 				col(colours.red)
-				print("The Endermen hack you in their sleep!")
+				write("\nThe Endermen hack you in their sleep!")
 				sleep(1.5)
 			end
 		until #password >=2
-		local hash = sha256(password..saltHash)
 		local passWrite = io.open("/.EnderOS/.passInfo","w")
-		passWrite:write(hash)
+		passWrite:write(sha256(password..saltHash))
 		passWrite:close()
 	end
 	local function hint()
 		repeat
-			reset()
-			col(colours.orange)
-			print("Please enter your desired Password hint")
-			col(colours.white)
-			hint = read()
-			if #hint >30 then
-				col(colours.red)
-				print("The Endermen revoke any hint greater than 30 characters!")
-				sleep(1.5)
-			end
+			redraw("Please enter your desire Password Hint", "Your Password Hint may be up to 30 characters long")
+			hint = limitRead(30)
 		until #hint <=30
 		local hintWrite = io.open("/.EnderOS/.userHint","w")
 		hintWrite:write(hint)
 		hintWrite:close()
-	end
-	if not fs.exists("/.EnderOS") then
-		fs.makeDir("/.EnderOS")
 	end
 	if fs.exists("/.EnderOS/.userInfo") then
 		local userRead = io.open("/.EnderOS/.userInfo","r")
@@ -438,724 +451,788 @@ local function defineSettings() --FINISHED
 	else
 		hint()
 	end
-	--Create a file saying EnderOS is installed
-	if userContents ~= nil and passContents ~= nil and hintContents ~= nil and not fs.exists("/.EnderOS/.EnderOSisInstalled") then
-		local installC = io.open("/.EnderOS/.EnderOSisInstalled", "w")
-		installC:write("If said user happens to stumble across this file, said user shall leave said file alone!")
-		installC:close()
-	end
 end
-
-local function screen()
-	local screenUI = {
-		{text = "+-------------------------------------------------+", x = 1, y = 1, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 2, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 3, textCol = colours.lime},
-		{text = "EnderOS "..version, x = 19, y = 3, textCol = colours.purple},
-		{text = "|                                                 |", x = 1, y = 4, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 5, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 6, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 7, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 8, textCol = colours.lime},
-		{text = "Username:", x = 10, y = 8, textCol = colours.orange},
-		{text = "|                                                 |", x = 1, y = 9, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 10, textCol = colours.lime},
-		{text = "Password:", x = 10, y = 10, textCol = colours.orange},
-		{text = "|                                                 |", x = 1, y = 11, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 12, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 13, textCol = colours.lime},
-		{text = "Password Hint:", x = 8, y = 13, textCol = colours.blue},
-		{text = "|                                                 |", x = 1, y = 14, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 15, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 16, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 17, textCol = colours.lime},
-		{text = "|                                                 |", x = 1, y = 18, textCol = colours.lime},
-		{text = "+-------------------------------------------------+", x = 1, y = 19, textCol = colours.lime}
-	}
-	term.clear()
-	term.setCursorPos(1,1)
-	for k,v in pairs(screenUI) do
-		term.setCursorPos(v.x,v.y)
-		col(v.textCol)
-		term.write(v.text)
-	end
-	randomGen()
-end
-
 local function login()
-	reset()
-	if fs.exists("/.EnderOS/.lock") then --Checks if the user locked his/her computer
-		term.setBackgroundColor(colours.black)
-		userRead = io.open("/.EnderOS/.userInfo","r")
-		userContents = userRead:read()
-		userRead:close()
-		passRead = io.open("/.EnderOS/.passInfo","r")
-		passContents = passRead:read()
-		passRead:close()
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			term.setCursorPos(11,4)
-			col(colours.purple)
-			term.write("This computer has been locked!")
-			term.setCursorPos(15,8)
-			col(colours.orange)
-			term.write("Username:")
-			term.setCursorPos(15,10)
-			term.write("Password:")
-			term.setCursorPos(25,8)
-			col(colours.white)
-			username = read()
-			hashUsername = sha256(username..saltHash)
-			term.setCursorPos(25,10)
-			password = read("*")
-			hashPassword = sha256(password..saltHash)
-		until hashUsername == userContents and hashPassword == passContents
-		fs.delete("/.EnderOS/.lock")
-		return
-	end
-	userRead = io.open("/.EnderOS/.userInfo","r")
-	userContents = userRead:read()
-	userRead:close()
-	passRead = io.open("/.EnderOS/.passInfo","r")
-	passContents = passRead:read()
-	passRead:close()
-	hintRead = io.open("/.EnderOS/.userHint","r")
-	hintContents = hintRead:read()
-	hintRead:close()
-	while true do
-		repeat
-			screen()
-			term.setCursorPos(23,13)
-			col(colours.lightGrey)
-			print(hintContents)
-			col(colours.white)
-			term.setCursorPos(20,8)
-			col(colours.white)
-			username = read()
-			hashU = sha256(username..saltHash)
-			term.setCursorPos(20,10)
-			col(colours.white)
-			password = read("*")
-			hashP = sha256(password..saltHash)
-		until hashU == userContents and hashP == passContents
-		break
-	end
-	reset()
-end
-
-local function settings()
-	local function changeUsername()
-		local handle = io.open("/.EnderOS/.passInfo","r")
-		local contents = handle:read()
-		handle:close()
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			col(colours.orange)
-			term.setCursorPos(2,2)
-			term.write("Please enter your password: ")
-			col(colours.white)
-			term.setCursorPos(2,3)
-			local input = read("*")
-			hash = sha256(input..saltHash)
-			if hash ~= passContents then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("Invalid password")
-				sleep(1.5)
-			end
-		until hash == passContents
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			col(colours.orange)
-			term.setCursorPos(2,2)
-			term.write("Enter new username:")
-			col(colours.white)
-			term.setCursorPos(2,3)
-			username = read()
-			if #username<2 then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("The Endermen hack you in their sleep!")
-				sleep(3)
-			end
-		until #username>=2
-		local hash = sha256(username..saltHash)
-		local handle = io.open("/.EnderOS/.userInfo","w")
-		handle:write(hash)
-		handle:close()
-		col(colours.lightBlue)
-		term.setCursorPos(2,4)
-		term.write("Your new username is "..username)
-		sleep(2)
-	end
-	local function changePassword()
-		local handle = io.open("/.EnderOS/.passInfo","r")
-		local contents = handle:read()
-		handle:close()
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			col(colours.orange)
-			term.setCursorPos(2,2)
-			term.write("Please enter your password: ")
-			col(colours.white)
-			term.setCursorPos(2,3)
-			local input = read("*")
-			local hash = sha256(input..saltHash)
-			if hash ~= passContents then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("Invalid password")
-				sleep(1.5)
-			end
-		until hash == passContents
-		sleep(0.1)
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			col(colours.orange)
-			term.setCursorPos(2,2)
-			term.write("Enter new password: ")
-			col(colours.white)
-			term.setCursorPos(2,3)
-			password = read("*")
-			if #password <2 then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("The Endermen hack you in their sleep!")
-				sleep(3)
-			elseif password == contents then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("You cannot have the same username and password")
-				sleep(3)
-			end
-		until #password >=2
-		local hash = sha256(password..saltHash)
-		local handle = io.open("/.EnderOS/.passInfo","w")
-		handle:write(hash)
-		handle:close()
-		col(colours.lightBlue)
-		term.setCursorPos(2,4)
-		term.write("Your new password is "..password)
-		sleep(2)
-	end
-	local function changeHint()
-		repeat
-			reset()
-			col(colours.lime)
-			frame()
-			col(colours.orange)
-			term.setCursorPos(2,2)
-			print("Enter new hint: ")
-			col(colours.white)
-			term.setCursorPos(2,3)
-			hint = read()
-			if #hint >30 then
-				col(colours.red)
-				term.setCursorPos(2,4)
-				term.write("This Hint exceeds the max hint length of 30!")
-				sleep(3)
-			end
-		until #hint <=30
-		if hint == nil then return error("EnderOS has crashed: attempt to get length of nil; hint returned nil?") end
-		local handle = io.open("/.EnderOS/.userHint","w")
-		handle:write(hint)
-		handle:close()
-		col(colours.lightBlue)
-		term.setCursorPos(2,4)
-		term.write("Your new hint is "..hint)
-		sleep(2)
-	end
-	local function uninstall()
-		reset()
-		fs.delete("/.EnderOS")
-		if fs.exists("/EnderOS") then fs.delete("/EnderOS") end
-		local handle = fs.open("/startup","r")
-		local lines = handle.readLine()
-		local newHandle = fs.open("/EnderOS","w")
-		for lines in handle.readLine do
-			newHandle.writeLine(lines)
+	local screenUI = {
+		{text = "Username:", x = 8, y = 8, textCol = colours.orange},
+		{text = "Password:", x = 8, y = 10, textCol = colours.orange},
+		{text = "Password Hint:", x = 8, y = 12, textCol = colours.blue},
+	}
+	local motd = {
+		"Hello fellow Minecrafter!",
+		"Coded by SuicidalSTDz!",
+		"Catch me if you can!",
+		"Bug tested by Engineer!",
+		"Fight through the night!",
+		"The Endermen approve, do you?",
+		"Hate FORTH? Get Lua!",
+		"Who's Notch?",
+		"Shut up, or i'll flush you out",
+		"It's not bogus, it's an IBM standard",
+		"Beware of programmers that carry screwdrivers",
+		"LISP = Lots of Irritating Silly Parentheses",
+		"Cannot find REALITY.SYS. Universe halted",
+		"Warning! Buffer overflow, close the tumbler!",
+		"I survived an NT installation",
+		"The name is Baud......James Baud",
+		"Does fuzzy logic tickle?",
+		"All wiyht. Rho sritched mg kegtops awound?",
+		"Press every key to continue",
+		"Bell Labs Unix -- Reach out and grep someone.",
+		"FUBAR - where Geeks go for a drink",
+		"Black holes are where God divided by zero",
+		"Hey! It compiles! Ship it!",
+		"Zap! And there was the blue screen!",
+		"What color do you want that database?",
+		"Warning! Kernel crashed, Run for your lives!",
+		"How's my programming? Call 1-800-DEV-NULL",
+		"Quake and uptime do not like each other",
+		"God is real, unless declared integer",
+		"You sir, are an unknown USB device driver"
+	}
+	local img = paintutils.loadImage("/.EnderOS/.loginScreen")
+	local function screen(msg)
+		paintutils.drawImage(img,1,1)
+		col(colours.white)
+		center(motd[math.random(1,#motd)],h)
+		center(msg,1)
+		term.setBackgroundColour(colours.black)
+		for _,pos in pairs(screenUI) do
+			term.setCursorPos(pos.x,pos.y)
+			term.setTextColour(pos.textCol)
+			term.write(pos.text)
 		end
-		handle.close()
-		newHandle.close()
-		fs.delete("/startup")
-		return os.run({},"rom/programs/shell")
 	end
-	while true do
+	local userRead = io.open("/.EnderOS/.userInfo","r")
+	local userContents = userRead:read()
+	userRead:close()
+	local passRead = io.open("/.EnderOS/.passInfo","r")
+	local passContents = passRead:read()
+	passRead:close()
+	local hintRead = io.open("/.EnderOS/.userHint","r")
+	local hintContents = hintRead:read()
+	hintRead:close()
+	local times = 0
+	repeat
+		if fs.exists("/.EnderOS/.lock") then
+			screen("This computer is locked")
+		else
+			screen("EnderOS Login Screen")
+		end
+		local start = os.clock()
+		term.setCursorPos(23,12)
+		col(colours.lightGrey)
+		term.write(hintContents)
+		term.setCursorPos(18,8)
+		col(colours.white)
+		local username = sha256(limitRead(28)..saltHash)
+		term.setCursorPos(18,10)
+		local password = sha256(limitRead(28,"*")..saltHash)
+		if username ~= userContents and password ~= passContents then
+			if os.clock()-start <=1.5 then
+				term.setCursorPos(10,7)
+				col(colours.red)
+				if times < 5 then 
+					times = times+1
+					term.write("Would you mind slowing down..")
+					sleep(2)
+				else
+					term.write("We didn't want it to come to this..")
+					sleep(3)
+					os.shutdown()
+				end
+			end
+		end
+	until username == userContents and password == passContents
+	if fs.exists("/.EnderOS/.lock") then fs.delete("/.EnderOS/.lock") end
+end
+local function nonModify(path)
+	local readOnly = fs.list("/.EnderOS")
+	for i = 1,#readOnly do
+		if path == i or path == "/.EnderOS" or path == ".EnderOS" then
+			return true
+		end
+	end
+	return false
+end
+local function run(path)
+	if fs.exists(path) then
+		shell.run(path)
+	else
+		col(colours.red)
+		center(path.."seems to be missing", h)
+	end
+end
+local function fileSelect(opt)
+    local w,h = term.getSize()
+    local offset = 0
+    local lines = fs.list("")
+    local pos = {}
+    local dir = {}
+    local file = ""
+	local function nonModify(file)
+		if string.find(file,".EnderOS") ~= nil or string.find(file,"startup") ~= nil or fs.isReadOnly(file) then
+			return true
+		else
+			return false
+		end
+	end
+    local function redraw()
+		term.clear()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		term.setBackgroundColour(colours.purple)
+		term.setTextColour(colours.white)
+		center("Please select a file to "..opt,1)
+		brackets(w-4,h,"Back",colours.white,colours.black)
+		if #dir >0 then brackets(2,h,"Previous Dir",colours.white,colours.black) end
+		term.setCursorPos(1,h)
+		term.setBackgroundColour(colours.black)
+        for i = 2,h-1 do
+            term.setCursorPos(1,i)
+			term.write(lines[(i-1)+offset])
+        end
+    end
+    redraw()
+    local running = true
+    while running do
+        pos = {}
+        if offset == 0 then
+            for i = 1,h-2 do
+                if lines[i] ~= nil then
+					table.insert(pos,{x2 = #lines[i],y = i+1,file = lines[i]})
+                end
+            end
+        end
+        if offset > 0 then
+			for i = offset+1, (h+offset)-2 do
+				if lines[i] ~= nil then
+					table.insert(pos, {x2 = #lines[i], y = (i+1)-offset, file = lines[i]})
+				end
+			end
+		end
+		os.startTimer(0.05)
+        local event,p1,xpos,ypos = os.pullEvent()
+        if event == "mouse_scroll" then
+            if p1 == 1 and offset < math.max(#lines-(h-2),0) then
+                offset = offset+1
+                redraw()
+            end
+            if p1 == -1 and offset > 0 then
+                offset = offset-1
+                redraw()
+            end
+        end
+        if event == "mouse_click" then
+            if (xpos >= (w-5) and xpos <= w and ypos == h) then
+				file = nil
+                return file
+            elseif (xpos >= 1 and xpos <= 14 and ypos == h) and #dir > 0 then
+				dir[#dir] = nil
+				lines = fs.list(table.concat(dir)) or fs.list("")
+				offset = 0
+				redraw()
+			else
+                for _,tab in pairs(pos) do
+                    if (xpos >= 1 and xpos <= tab.x2 and ypos == tab.y) then
+                        if fs.isDir(table.concat(dir).."/"..tab.file) then
+                            if #fs.list(table.concat(dir).."/"..tab.file) > 0 then
+                                table.insert(dir, "/"..tab.file)
+								lines = fs.list(table.concat(dir))
+                                offset = 0
+								redraw()
+							else
+								local err = "End of path *gasp*"
+								term.setCursorPos((w-#err)+1,2)
+								col(colours.red)
+								term.write(err)
+								sleep(1)
+								redraw()
+							end
+                        else
+							if nonModify(table.concat(dir).."/"..tab.file) then
+								local er = "I don't think so"
+								term.setCursorPos((w-#er)+1,2)
+								term.setTextColour(colours.red)
+								term.write(er)
+								sleep(1)
+								redraw()
+							else
+								local file = table.concat(dir).."/"..tab.file
+								return file
+							end
+                        end
+                    end
+                end
+            end
+        end
+		if event == "timer" then
+			day_time()
+		end
+    end
+end
+local function fileManager()
+	local function redraw(header, bracketText)
 		reset()
-		frame()
-		bracket(uiS["settings"])
-		local _, button, xPos, yPos = os.pullEvent("mouse_click")
-		if button == 1 then
-			for k,tab in pairs(uiS["settings"]) do
-				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
-					if tab.option == "back" then
-						return
-					elseif tab.option == "changeUsername" then
-						changeUsername()
-						return settings()
-					elseif tab.option == "changePassword" then
-						changePassword()
-						return settings()
-					elseif tab.option == "changeHint" then
-						changeHint()
-						return settings()
-					elseif tab.option == "uninstall" then
-						uninstall()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		term.setBackgroundColour(colours.purple)
+		col(colours.white)
+		center(header,1)
+		if bracketText then bracket(bracketText) end
+		term.setBackgroundColour(colours.black)
+	end
+	local function edit(fileSelectHeader)
+		local ui = {
+			{text = "New File", x1 = 3, x2 = 12, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "newFile"},
+			{text = "Existing File", x1 = 15, x2 = 29, y = 3, col = colours.lime, bracketCol = colours.lightGrey, bgColour = colours.black, option = "existingFile"},
+			{text = "Back", x1 = 2, x2 = 7, y = h, col = colours.white, bracketCol = colours.black, bgColour = colours.purple, option = "back"}
+		}
+		redraw("Edit", ui)
+		while true do
+			local _, button, xpos, ypos = os.pullEvent("mouse_click")
+			for _,pos in pairs(ui) do
+				if button == 1 then
+					if (xpos >= pos.x1 and xpos <= pos.x2 and ypos == pos.y) then
+						if pos.option == "back" then
+							redraw("File Manager", main['fileManager'])
+							return
+						elseif pos.option == "newFile" then
+							repeat
+								term.clear()
+								redraw("New File")
+								term.setCursorPos(1,2)
+								col(colours.lime)
+								print("What file would you like to create?")
+								col(colours.white)
+								newFile = read()
+								term.setCursorPos(1,4)
+								if fs.exists(newFile) then
+									col(colours.red)
+									write("Invalid Arguement: File Exists")
+									sleep(1.5)
+								end
+							until not fs.exists(newFile)
+							shell.run("edit",newFile)
+						elseif pos.option == "existingFile" then
+							repeat 
+								path = fileSelect(fileSelectHeader)
+								if path == nil then return end
+							until path ~= nil
+							shell.run("edit",path)
+						end
 					end
+					redraw("Edit", ui)
 				end
 			end
 		end
 	end
-end
-
-local function programs()
-	reset()
-	col(colours.lime)
-	frame()
-	bracket(uiS["programs"])
+	local function rename(fileSelectHeader)
+		repeat 
+			source = fileSelect(fileSelectHeader) 
+			if source == nil then return end
+		until source ~= nil
+		repeat
+			redraw("Rename File")
+			term.setCursorPos(1,2)
+			col(colours.lime)
+			print("What would you like to rename this file as?")
+			col(colours.white)
+			dest = read()
+			if dest == "exit()" then
+				return nil
+			elseif fs.exists(dest) then
+				col(colours.red)
+				term.setCursorPos(1,4)
+				write("Invalid Arguement: File exists")
+				sleep(1.5)
+			end	
+		until not fs.exists(dest)
+		shell.run("rename",source,dest)
+	end
+	local function copy(fileSelectHeader)
+		repeat
+			source = fileSelect(fileSelectHeader)
+			if source == nil then return end
+		until source ~= nil
+		repeat
+			redraw("Copy File")
+			col(colours.lime)
+			term.setCursorPos(1,2)
+			print("Where would you like to copy this file to?")
+			col(colours.white)
+			dest = read()
+			if dest == "exit()" then
+				return nil
+			elseif fs.exists(dest) then
+				col(colours.red)
+				term.setCursorPos(1,4)
+				write("Invalid Arguement: File exists")
+				sleep(1.5)
+			end
+		until not fs.exists(dest)
+		shell.run("copy",source,dest)
+	end
+	local function move(fileSelectHeader)
+		repeat
+			source = fileSelect(fileSelectHeader)
+			if source == nil then return end
+		until source ~= nil
+		repeat
+			redraw("Move File")
+			col(colours.lime)
+			term.setCursorPos(1,2)
+			print("Where would you like to move this file to?")
+			col(colours.white)
+			dest = read()
+			if dest == "exit()" then return nil
+			elseif fs.exists(dest) then
+				col(colours.red)
+				term.setCursorPos(2,4)
+				print("Invalid Arguement: File exists")
+				sleep(1.5)
+			end
+		until not fs.exists(dest)
+		shell.run("move",source,dest)
+		redraw("File Manager", main['fileManager'])
+	end
+	local function delete(fileSelectHeader)
+		while true do
+			local del = fileSelect(fileSelectHeader)
+			if del ~= nil then fs.delete(del) else return end
+		end
+	end
+	local fsdelete = fs.delete
+	local fsrename = fs.rename
+	local fscopy = fs.copy
+	local fsmove = fs.move
+	function run(fileSelectHeader)
+		repeat
+			path = fileSelect(fileSelectHeader)
+			if path == nil then return end
+		until path ~= nil
+		local readOnly = fs.list("/.EnderOS")
+		local function check(path)
+			for i = 1,#readOnly do
+				if path == "/.EnderOS/"..readOnly[i] or path == ".EnderOS/"..readOnly[i] then
+					return error("Please do not tamper with OS files")
+				end
+			end
+			if path == "/.EnderOS" or path == ".EnderOS" or path == "startup" then
+				return error("Please do not tamper with OS files")
+			end	
+			return path
+		end
+		function fs.delete(path)
+			fsdelete(check(path))
+		end
+		function fs.rename(source, dest)
+			fsrename(check(source), dest)
+		end
+		function fs.copy(source, dest)
+			fscopy(check(source, dest))
+		end
+		function fs.move(source, dest)
+			fsmove(check(source), dest)
+		end
+		term.clear()
+		function runFile() dofile(path) end
+		local ok, err = pcall(runFile)
+		if not ok then
+			redraw("Error!")
+			term.setBackgroundColour(colours.purple)
+			center("Click anywhere to continue",h)
+			term.setBackgroundColour(colours.black)
+			term.setCursorPos(1,2)
+			printError("Error: "..err)
+			while true do
+				os.startTimer(0.05)
+				local ev = os.pullEvent()
+				if ev == "timer" then
+					day_time()
+				elseif ev == "mouse_click" then
+					return
+				end
+			end
+		end
+	end
+	redraw("File Manager", main["fileManager"])
 	while true do
-		local _,button,xPos,yPos = os.pullEvent("mouse_click")
-		if button == 1 then
-			for k,tab in pairs(uiS["programs"]) do
+		os.startTimer(0.05)
+		local ev, button, xPos, yPos = os.pullEvent()
+		if ev == "timer" then
+			day_time()
+		end
+		if ev == "mouse_click" and button == 1 then
+				for _,mode in pairs(main["fileManager"]) do
+					if (xPos >= mode.x1 and xPos <= mode.x2 and yPos == mode.y) then
+						if mode.option == "back" then
+							return
+						elseif mode.option == "edit" then
+							edit(mode.option)
+						elseif mode.option == "rename" then
+							rename(mode.option)
+						elseif mode.option == "copy" then
+							copy(mode.option)
+						elseif mode.option == "move" then
+							move(mode.option)
+						elseif mode.option == "delete" then
+							delete(mode.option)
+						elseif mode.option == "run" then
+							run(mode.option)
+							fs.rename = fsrename
+							fs.delete = fsdelete
+						end
+					end
+				end
+			redraw("File Manager", main['fileManager'])
+		end
+	end
+end
+local function programs()
+	local function redraw(header, bracketText)
+		reset()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		term.setBackgroundColour(colours.purple)
+		col(colours.white)
+		center(header,1)
+		if bracketText then bracket(bracketText) end
+		term.setBackgroundColour(colours.black)
+	end
+	redraw("Programs", main['programs'])
+	while true do
+		os.startTimer(0.05)
+		local ev, button, xPos, yPos = os.pullEvent()
+		if ev == "timer" then
+			day_time()
+		elseif ev == "mouse_click" and button == 1 then
+			for _,tab in pairs(main["programs"]) do
 				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
 					if tab.option == "back" then
 						return
 					elseif tab.option == "firewolf" then
-						shell.run("/.EnderOS/.firewolf")
-						return programs()
+						run("/.EnderOS/.firewolf")
+					elseif tab.option == "calculator" then
+						run("/.EnderOS/.calculator")
 					end
 				end
+				redraw("Programs", main['programs'])
 			end
 		end
 	end
 end
-
-local function edit()
-	local success = true
-	local edit = true
-	repeat
-		reset()
-		col(colours.orange)
-		print("What file do you wish to edit? Type exit() to return to the desktop")
-		col(colours.white)
-		file = read()
-		if file == "exit()" then
-			edit = false
-		elseif fs.isDir(file) then
-			col(colours.red)
-			term.write("Invalid Arguement: Cannot edit a directory")
-			sleep(1.5)
-			return edit()
-		elseif fs.isReadOnly(file) then
-			col(colours.red)
-			term.write("Invalid Arguement: Read-Only file")
-			sleep(1.5)
-		end
-	until not fs.isDir(file) and not fs.isReadOnly(file) or edit == false
-	if edit == false then
-		return
-	else
-		shell.run("edit",file)
-	end
-end
-
-local function fileManager()
-	reset()
-	col(colours.lime)
-	frame()
-	bracket(uiS["fileManagerWords"])
-	while true do
-		local _, p1, xPos, yPos = os.pullEvent("mouse_click")
-		if p1 == 1 then
-			for k,tab in pairs(uiS["fileManagerWords"]) do
-				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
-					if tab.option == "back" then
-						return
-					elseif tab.option == "edit" then
-						edit()
-						return fileManager()
-					end
-				end
-			end
-		end	
-	end
-end
-
-local function scroll(text,x,y)
-	col(colours.lightBlue)
-	local offset = 0
-	local lines = shell.programs()
-	local termw, termh = term.getSize()
-	
-	local redraw = function()
-		frame()
-		term.setCursorPos(x-1,y)
-		col(colours.lightGray)
-		term.write("[")
-		term.setCursorPos(#text+x,y)
-		term.write("]")
-		col(colours.purple)
-		term.setCursorPos(x,y)
-		term.write(text)
-		col(colours.lightBlue)
-		for i = 2, termh-1 do
-			term.setCursorPos(2, i)
-			term.write(lines[i + offset])
-		end
-	end
-	redraw()
-	
-	local running = true
-	while running do
-		term.setCursorPos(26,18)
-		col(colours.yellow)
-		print("Press any key to continue")
-		local event, p1, xPos, yPos = os.pullEvent()
-		if event == "mouse_scroll" then
-			if p1 == 1 and offset < math.max(#lines - termh, 0) then
-				offset = offset + 1
-				redraw()
-			end
-			if p1 == -1 and offset > 0 then
-				offset = offset - 1
-				redraw()
-			end
-		end
-		if event == "key" then 
-			running = false
-			return running
-		end
-	end
-end
-
-local function renameFile()
-	term.setCursorPos(2,2)
-	scroll("Rename File",21,1)
-	frame()
-	term.setCursorPos(32,18)
-	col(colours.yellow)
-	term.write("Type exit() to exit")
-	term.setCursorPos(2,2)
-	col(colours.orange)
-	print("What file would you like to rename?")
-	repeat
-		col(colours.white)
-		term.setCursorPos(2,3)
-		input = read()
-		col(colours.red)
-		if input == "exit()" then
-			return
-		end
-		if fs.isDir(input) then
-			term.write("Invalid Arguement: Cannot edit a directory")
-			sleep(1.5)
-			return renameFile()
-		elseif fs.isReadOnly(input) then
-			term.write("Invalid Arguement: Read-Only file")
-			sleep(1.5)
-			return renameFile()
-		elseif not fs.exists(input) then
-			term.write("Invalid Arguement: No such file")
-			sleep(1.5)
-			return renameFile()
-		end
-	until (success) and not fs.isDir(input) and not fs.isReadOnly(input) and fs.exists(input)
-end
-	
-local function bootOS()
-	local function redraw()
-		reset()
-		col(colours.purple)
-		print("--------------------------------------------------")
-		col(colours.orange)
-		print(" Initializing...")
-		col(colours.purple)
-		print("--------------------------------------------------")
-		col(colours.white)
-	end
-	redraw()
-	--if shell.getRunningProgram() ~= "startup" then return error("EnderOS must be contained in a startup file") end
-	if not http then return error("HTTP must be enabled to use EnderOS") end
-	if not term.isColor and not term.isColor() then
-		return error("Advanced computers are needed to run EnderOS")
-	elseif not term.isColor or not term.isColor() then
-		return error("Advanced computers are needed to run EnderOS")
-	end
-	col(colours.blue)
-	print("OS booting...")
-	sleep(0.2)
-	redraw()
-	defineSettings()
-	col(colours.blue)
-	print("Settings loaded...")
-	sleep(0.2)
-	redraw()
-	col(colours.blue)
-	print("Checking for updates...")
-	sleep(0.2)
-	local response = http.get("https://raw.github.com/SuicidalSTDz/EnderOS/master/config")
-	local data  = {}
-	local sResponse = response.readLine()
-	for sResponse in response.readLine do
-		table.insert(data,sResponse)
-	end
-	response.close()
-	if enderOSID ~= data[1] then
-		col(colours.yellow)
-		shell.run("pastebin","get",(data[1]),"/.EnderOS/.EnderOSUpdate")
-		if not fs.exists("/.EnderOS/.EnderOSUpdate") then
-			col(colours.red)
-			print("An error has occurred while updating EnderOS")
-			sleep(2)
-			os.run({},"rom/programs/shell")
-		else
-			fs.delete("startup")
-			fs.move("/.EnderOS/.EnderOSUpdate","startup")
-			col(colours.lime)
-			print("EnderOS has updated successfully...")
-			sleep(1)
-			redraw()
-		end
-	end
-	if adventureCraft ~= data[2] then
-		shell.run("pastebin","get",data[2],"/.EnderOS/.adventureCraftUpdate")
-		if not fs.exists("/.EnderOS/.adventureCraftUpdate") then
-			print("An error has occurred while updating AdventureCraft")
-			sleep(2)
-		else
-			fs.delete("/.EnderOS/.adventureCraft")
-			fs.move("/.EnderOS/.adventureCraftUpdate","/.EnderOS/.adventureCraft")
-			print("AdventureCraft updated successfully...")
-			sleep(1)
-		end
-	end
-	if firewolf ~= data[3] then
-		shell.run("pastebin","get",data[3],"/.EnderOS/.firewolfUpdate")
-		if not fs.exists("/.EnderOS/.firewolfUpdate") then
-			print("An error has occurred while updating Firewolf")
-			sleep(2)
-		else
-			fs.delete("/.EnderOS/.firewolf")
-			fs.move("/.EnderOS/.firewolfUpdate","/.EnderOS/.firewolf")
-			print("Firewolf updated successfully...")
-			sleep(1)
-		end
-	end
-	if skullPong ~= data[4] then
-		shell.run("pastebin","get",data[4],"/.EnderOS/.skullPongUpdate")
-		if not fs.exists("/.EnderOS/.skullPongUpdate") then
-			print("An error has occurred while updating SkullPong")
-			sleep(2)
-		else
-			fs.delete("/.EnderOS/.skullPong")
-			fs.move("/.EnderOS/.skullPongUpdate","/.EnderOS/.skullPong")
-			print("SkullPong updated successfully...")
-			sleep(1)
-		end
-	end
-	if guessThatColor ~= data[5] then
-		shell.run("pastebin","get",data[4],"/.EnderOS/.guessThatColorUpdate")
-		if not fs.exists("/.EnderOS/.guessThatColorUpdate") then
-			print("An error has occurred while updating Guess That Color")
-			sleep(2)
-		else
-			fs.delete("/.EnderOS/.guessThatColor")
-			fs.move("/.EnderOS/.guessThatColorUpdate","/.EnderOS/.guessThatColor")
-			print("Guess That Color updated successfully")
-			sleep(1)
-		end
-	end
-	col(colours.lime)
-	print(" Applied updates successfully...")
-	sleep(0.2)
-	redraw()
-	col(colours.blue)
-	print("Loading Games...")
-	sleep(0.2)
-	if fs.exists("/.EnderOS/.adventureCraft") then
-		col(colours.lime)
-		print(" AdventureCraft loaded...")
-		sleep(0.2)
-	else
-		col(colours.red)
-		print(" AdventureCraft is missing")
-		col(colours.yellow)
-		shell.run("pastebin","get",adventureCraft,"/.EnderOS/.adventureCraft")
-		if not fs.exists("/.EnderOS/.adventureCraft") then
-			col(colours.red)
-			print(" AdventureCraft is either corrupt or was not downloaded properly")
-			sleep(0.2)
-		else
-			col(colours.lime)
-			print(" AdventureCraft loaded...")
-			sleep(0.2)
-		end
-	end
-	if fs.exists("/.EnderOS/.skullPong") then
-		col(colours.lime)
-		print(" SkullPong loaded...")
-		sleep(0.2)
-	else
-		col(colours.red)
-		print(" SkullPong is missing")
-		col(colours.yellow)
-		shell.run("pastebin","get",skullPong,"/.EnderOS/.skullPong")
-		if not fs.exists("/.EnderOS/.skullPong") then
-			col(colours.red)
-			print(" SkullPong is either corrupt or was not downloaded properly")
-			sleep(0.2)
-		else
-			col(colours.lime)
-			print(" SkullPong loaded...")
-			sleep(0.2)
-		end
-	end
-	if fs.exists("/.EnderOS/.guessThatColor") then
-		col(colours.lime)
-		print(" Guess That Color loaded...")
-		sleep(0.2)
-	else
-		col(colours.red)
-		print(" Guess That Color is missing")
-		col(colours.yellow)
-		shell.run("pastebin","get",guessThatColor,"/.EnderOS/.guessThatColor")
-		if not fs.exists("/.EnderOS/.guessThatColor") then
-			col(colours.red)
-			print(" Guess That Color is either corrupt or was not downloaded properly")
-			sleep(0.2)
-		else
-			col(colours.lime)
-			print(" Guess That Color loaded...")
-			sleep(0.2)
-		end
-	end
-	col(colours.blue)
-	print("Games loaded!")
-	sleep(0.2)
-	redraw()
-	col(colours.blue)
-	print("Loading programs...")
-	sleep(0.2)
-	if fs.exists("/.EnderOS/.firewolf") then
-		col(colours.lime)
-		print(" Firewolf loaded...")
-		sleep(0.2)
-	else
-		col(colours.red)
-		print(" Firewolf is missing")
-		col(colours.yellow)
-		shell.run("pastebin","get",firewolf,"/.EnderOS/.firewolf")
-		if not fs.exists("/.EnderOS/.firewolf") then
-			col(colours.red)
-			print(" Firewolf is either corrupt or was not downloaded properly")
-			sleep(0.2)
-		else
-			col(colours.lime)
-			print(" Firewolf loaded...")
-			sleep(0.2)
-		end
-	end
-	col(colours.blue)
-	print("Programs loaded!")
-	sleep(0.2)
-	redraw()
-	col(colours.blue)
-	print("EnderOS has successfully booted!")
-	sleep(0.2)
-end
-
 local function games()
-	reset()
-	col(colours.lime)
-	frame()
-	bracket(uiS["games"])
+	local function redraw(header, bracketText)
+		reset()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		term.setBackgroundColour(colours.purple)
+		col(colours.white)
+		center(header,1)
+		if bracketText then bracket(bracketText) end
+		term.setBackgroundColour(colours.black)
+	end
+	redraw("Games", main['games'])
 	while true do
-		local _,button,xPos,yPos = os.pullEvent("mouse_click")
-		if button == 1 then
-			for k,tab in pairs(uiS["games"]) do
+		os.startTimer(0.05)
+		local ev, button, xPos, yPos = os.pullEvent()
+		if ev == "timer" then
+			day_time()
+		elseif ev == "mouse_click" and button == 1 then
+			for _,tab in pairs(main['games']) do
 				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
 					if tab.option == "back" then
 						return
 					elseif tab.option == "skullPong" then
-						if fs.exists("/.EnderOS/.skullPong") then
-							shell.run("/.EnderOS/.skullPong")
-							return games()
-						end
-					elseif tab.option == "adventureCraft" then
-						if fs.exists("/.EnderOS/.adventureCraft") then
-							shell.run("/.EnderOS/.adventureCraft")
-							return games()
-						end
+						run("/.EnderOS/.skullPong")
 					elseif tab.option == "guessThatColor" then
-						if fs.exists("/.EnderOS/.guessThatColor") then
-							shell.run("/.EnderOS/.guessThatColor")
-							return games()
-						end
-					elseif tab.option == "calculator" then
-						if not fs.exists("/.EnderOS/.calculator") then
-							shell.run("/.EnderOS/.calculator")
-							return games()
-						end
+						run("/.EnderOS/.guessThatColor")
 					end
+					redraw("Games", main['games'])
 				end
 			end
 		end
 	end
 end
-
-local function mainOS()
-	while true do
+local function settings()
+	local function redraw(header, bracketText)
+		reset()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		paintutils.drawLine(1,h,w,h,colours.purple)
+		term.setBackgroundColour(colours.purple)
+		col(colours.white)
+		center(header,1)
+		if bracketText then bracket(bracketText) end
+		term.setBackgroundColour(colours.black)
+	end
+	local function change(header, mode, minLimit, path, replaceChar)
+		local password = io.open("/.EnderOS/.passInfo","r")
+		local passContents = password:read()
+		password:close()
+		repeat
+			redraw(header)
+			col(colours.lime)
+			print()
+			write("Please enter your password\n")
+			col(colours.white)
+			input = sha256(limitRead(28, "*")..saltHash)
+			if input ~= passContents then
+				col(colours.red)
+				write("\nInvalid password")
+				sleep(1)
+			end
+		until input == passContents
+		repeat
+			redraw(header)
+			print()
+			col(colours.lime)
+			write("Enter new "..mode.."\n")
+			col(colours.white)
+			new = limitRead(28, replaceChar or "")
+			if #new < (minLimit or 0) then
+				col(colours.red)
+				write("\nThe Endermen hack you in their sleep!")
+				sleep(1)
+			end
+		until #new >= minLimit
+		local handle = io.open(path,"w")
+		handle:write(sha256(new..saltHash))
+		handle:close()
+		col(colours.lightBlue)
+		write("\nYour new "..mode.." is "..new)
+		sleep(1)
+	end
+	local function changeHint()
+		redraw("Change Hint")
+		print()
 		col(colours.lime)
-		frame()
-		bracket(uiS["desktopWords"])
-		local _, p1, xPos, yPos = os.pullEvent("mouse_click")
-		for k,tab in pairs(uiS["desktopWords"]) do
-			if p1 == 1 then
+		write("Enter new hint\n")
+		col(colours.white)
+		hint = limitRead(30)
+		local handle = io.open("/.EnderOS/.userHint","w")
+		handle:write(hint)
+		handle:close()
+		col(colours.lightBlue)
+		write("\nYour new hint is "..hint)
+		sleep(1)
+	end
+	redraw("Settings", main['settings'])
+	while true do
+		os.startTimer(0.05)
+		local ev, button, xPos, yPos = os.pullEvent()
+		if ev == "timer" then
+			day_time()
+		elseif ev == "mouse_click" and button == 1 then
+			for _,tab in pairs(main["settings"]) do
+				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
+					if tab.option == "back" then
+						return
+					elseif tab.option == "changeUsername" then
+						change("Change Username", "username", 2, "/.EnderOS/.userInfo")
+					elseif tab.option == "changePassword" then
+						change("Change Password", "password", 2, "/.EnderOS/.passInfo", "*")
+					elseif tab.option == "changeHint" then
+						changeHint()
+					elseif tab.option == "uninstall" then
+						fs.delete("/.EnderOS")
+						fs.delete("startup")
+						reset()
+						os.run({}, "rom/programs/shell")
+					end
+					redraw("Settings", main['settings'])
+				end
+			end
+		end
+	end
+end
+local function bootOS()
+	local function redraw()
+		reset()
+		paintutils.drawLine(1,1,w,1,colours.purple)
+		term.setCursorPos(1,1)
+		term.setTextColour(colours.white)
+		term.write("EnderOS Console")
+		term.setBackgroundColour(colours.black)
+		print("")
+	end
+	if not fs.exists("/.EnderOS/.EnderOSisInstalled") then
+		reset()
+		col(colours.purple)
+		for i = 1,#logo do
+			term.setCursorPos(((w-#logo[i])/2)+1,i)
+			term.write(logo[i])
+		end
+		fs.makeDir("/.EnderOS")
+		local handle = io.open("/.EnderOS/.EnderOSisInstalled","w")
+		handle:close()
+		sleep(2.5)
+	end
+	defineSettings()
+	redraw()
+	local response = http.get("https://raw.github.com/SuicidalSTDz/EnderOS/master/config")
+	local data  = {}
+	if not response then
+		col(colours.red)
+		print("Could not connect to Github!")
+		sleep(2)
+	else
+		local sResponse = response.readLine()
+		for sResponse in response.readLine do
+			table.insert(data,sResponse)
+		end
+		response.close()
+		if version ~= data[1] then
+			col(colours.orange)
+			print("An update is available for EnderOS. Would you like to download this update?")
+			col(colours.white)
+			local input = string.lower(read())
+			if input == "yes" then
+				col(colours.blue)
+				print("Updating EnderOS...")
+				if not pastebinGet(data[2] ,"/.EnderOS/.EnderOSUpdate") then
+					col(colours.red)
+					print("An error has occurred while updating EnderOS")
+					sleep(2)
+				else
+					fs.delete("startup")
+					fs.move("/.EnderOS/.EnderOSUpdate","startup")
+					col(colours.lime)
+					print("EnderOS has updated successfully...")
+					sleep(1)
+					print("EnderOS is rebooting to apply the updates")
+					os.run({},"startup")
+				end
+			end
+		end
+		redraw()
+	end
+	col(colours.orange)
+	print("Checking files under directory: /.EnderOS")
+	if not fs.exists("/.EnderOS/.desktopIMG") then
+		local response = http.get("https://raw.github.com/SuicidalSTDz/EnderOS/master/desktopIMG")
+		if not response then
+			reset()
+			error("Could not download EnderOS desktopScreen")
+		else
+			local handle = fs.open("/.EnderOS/.desktopIMG","w")
+			local sResponse = response.readLine()
+			for sResponse in response.readLine do
+				handle.writeLine(sResponse)
+			end
+			response.close()
+			handle.close()
+		end
+	end
+	if not fs.exists("/.EnderOS/.loginScreen") then
+		local response = http.get("https://raw.github.com/SuicidalSTDz/EnderOS/master/loginScreen")
+		if not response then
+			reset()
+			error("Could not download EnderOS loginScreen")
+		else
+			local handle = fs.open("/.EnderOS/.loginScreen","w")
+			local sResponse = response.readLine()
+			for sResponse in response.readLine do
+				handle.writeLine(sResponse)
+			end
+			response.close()
+			handle.close()
+		end
+	end
+	for _,v in pairs(boot["files"]) do
+		if not fs.exists("/.EnderOS"..v.file) then
+			col(colours.red)
+			print(" No such file: /.EnderOS"..v.file)
+			if not pastebinGet(v.id, "/.EnderOS"..v.file) then
+				col(colours.red)
+				print("  Could not download file")
+			else
+				col(colours.lime)
+				print("  Downloaded file")
+			end
+			sleep(0.2)
+		else
+			col(colours.lime)
+			print(" Found file: /.EnderOS"..v.file)
+			sleep(0.2)
+		end
+	end
+	sleep(0.2)
+end
+local function mainOS()
+	bootOS()
+	login()
+	local desktop = paintutils.loadImage("/.EnderOS/.desktopIMG")
+	local function redraw()
+		paintutils.drawImage(desktop,1,1)
+		term.setBackgroundColour(colours.purple)
+		term.setTextColour(colours.white)
+		center("EnderOS "..version,1)
+		bracket(main["desktop"])
+	end
+	redraw()
+	while true do
+		os.startTimer(0.05)
+		local ev, button, xPos, yPos = os.pullEvent()
+		if ev == "timer" then
+			day_time()
+		elseif ev == "mouse_click" and button == 1 then
+			for _,tab in pairs(main["desktop"]) do			
 				if (xPos >= tab.x1 and xPos <= tab.x2 and yPos == tab.y) then
 					if tab.option == "programs" then
 						programs()
-						return mainOS()
 					elseif tab.option == "fileManager" then
 						fileManager()
-						return mainOS()
 					elseif tab.option == "games" then
 						games()
-						return mainOS()
 					elseif tab.option == "settings" then
 						settings()
-						return mainOS()
 					elseif tab.option == "logOff" then
 						login()
-						return mainOS()
 					elseif tab.option == "lock" then
 						local handle = io.open("/.EnderOS/.lock","w")
-						handle:write("This computer is locked by the Endermen")
 						handle:close()
 						login()
 					elseif tab.option == "reboot" then
-						return os.reboot()
+						os.reboot()
 					elseif tab.option == "shutdown" then
-						return os.shutdown()
+						os.shutdown()
 					elseif tab.option == "exit" then
 						reset()
 						return
 					end
+					redraw()
 				end
 			end
 		end
 	end
 end
 
-bootOS()
-login()
-mainOS()
+--[[Call the OS while capturing any errors returned]]--
+if shell.getRunningProgram() ~= "startup" then return error("EnderOS must be contained in a startup file") end
+if not http then return error("HTTP must be enabled to use EnderOS") end
+if not term.isColor() then return error("Advanced computers are needed to run EnderOS") end
+local ok,err = pcall(mainOS)
+if not ok then
+	reset()
+	paintutils.drawLine(1,1,w,1,colours.purple)
+	paintutils.drawLine(1,h,w,h,colours.purple)
+	col(colours.white)
+  	center("The Endermen won't be happy to hear about this!",1)
+  	center("Press any key to continue",h)
+	term.setBackgroundColour(colours.black)
+	col(colours.lime)
+	center("- Please PM SuicidalSTDz this error log!",2)
+  	center("- Saved as /.EnderOS/.errorLog",3)
+	col(colours.red)
+	center(err, h/2)
+	local errLog = io.open("/.EnderOS/.errorLog","w")
+	errLog:write(err)
+	errLog:close()
+	col(colours.white)
+	 while true do
+	 	local event = os.pullEvent("mouse_click")
+	  	reset()
+	 	break
+ 	end
+end
